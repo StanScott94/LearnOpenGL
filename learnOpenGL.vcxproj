@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\twins\Documents\programming\learnOpenGL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\twins\Documents\programming\learnOpenGL\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\twins\Documents\programming\learnOpenGL\vendor\glfw;C:\Users\twins\Documents\programming\learnOpenGL\vendor\glad;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -132,8 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\adapter\glad\glad.c" />
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="vendor\glad\glad.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
