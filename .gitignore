@@ -1,5 +1,10 @@
 # Environment
-*.vs
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
 
 # Prerequisites
 *.d
