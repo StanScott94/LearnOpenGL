@@ -6,6 +6,10 @@
 **.vcxproj.user
 **.csproj
 
+# Binaries
+**/bin/
+bin-int/
+
 # Prerequisites
 *.d
 
