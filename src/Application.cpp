@@ -1,11 +1,22 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <stb_image/stb_image.h>
 #include "shaders/Shader.h"
 
+struct Context {
+    GLFWwindow* window;
+    float xPos, yPos, zPos;
+    float xRotate, yRotate, zRotate;
+} context;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(Context* context);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -20,15 +31,15 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "learnOpenGL", NULL, NULL);
-    if (window == NULL) {
+    context.window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "learnOpenGL", NULL, NULL);
+    if (context.window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwMakeContextCurrent(context.window);
+    glfwSetFramebufferSizeCallback(context.window, framebuffer_size_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -39,11 +50,11 @@ int main() {
     Shader ourShader("shaders/shader.vs", "shaders/shader.fs");
 
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        // positions         // texture coords
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
     };
 
     unsigned int indices[] = {
@@ -65,14 +76,11 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
     // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
  
     unsigned int texture1;
     glGenTextures(1, &texture1);
@@ -80,7 +88,7 @@ int main() {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     stbi_set_flip_vertically_on_load(true);
@@ -120,8 +128,8 @@ int main() {
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
 
-    while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+    while (!glfwWindowShouldClose(context.window)) {
+        processInput(&context);
 
         glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -131,11 +139,22 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(context.xPos, context.yPos, context.zPos));
+        trans = glm::rotate(trans, context.xRotate, glm::vec3(1.0f, 0.0f, 0.0f));
+        trans = glm::rotate(trans, context.yRotate, glm::vec3(0.0f, 1.0f, 0.0f));
+        trans = glm::rotate(trans, context.zRotate, glm::vec3(0.0f, 0.0f, 1.0f));
+        trans = glm::scale(trans, glm::vec3(context.zPos, context.zPos, context.zPos));
+
         ourShader.use();
+ 
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(context.window);
         glfwPollEvents();
     }
 
@@ -151,7 +170,46 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+void processInput(Context* context) {
+    if (glfwGetKey(context->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(context->window, true);
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        context->yPos = context->yPos <= 1.0f ? context->yPos + 0.001f : 1.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        context->yPos = context->yPos >= -1.0f ? context->yPos - 0.001f : -1.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        context->xPos = context->xPos <= 1.0f ? context->xPos + 0.001f : 1.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        context->xPos = context->xPos >= -1.0f ? context->xPos - 0.001f : -1.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_UP) == GLFW_PRESS) {
+        context->zPos = context->zPos >= 0.0f ? context->zPos - 0.001f : -0.0f;
+        printf("%6.4lf\n", context->zPos);
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        context->zPos = context->zPos <= 0.95f ? context->zPos + 0.001f : 0.9f;
+    }
+
+    if (glfwGetKey(context->window, GLFW_KEY_W) == GLFW_PRESS) {
+        context->xRotate = context->xRotate <= 360.0f ? context->xRotate + 0.001f : 0.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_S) == GLFW_PRESS) {
+        context->xRotate = context->xRotate >= -360.0f ? context->xRotate - 0.001f : 0.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_D) == GLFW_PRESS) {
+        context->yRotate = context->yRotate <= 360.0f ? context->yRotate + 0.001f : 0.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_A) == GLFW_PRESS) {
+        context->yRotate = context->yRotate >= -360.0f ? context->yRotate - 0.001f : 0.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_E) == GLFW_PRESS) {
+        context->zRotate = context->zRotate <= 360.0f ? context->zRotate + 0.001f : 0.0f;
+    }
+    if (glfwGetKey(context->window, GLFW_KEY_Q) == GLFW_PRESS) {
+        context->zRotate = context->zRotate >= -360.0f ? context->zRotate - 0.001f : 0.0f;
+    }
 }
