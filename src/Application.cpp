@@ -1,25 +1,42 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image/stb_image.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-#include <stb_image/stb_image.h>
-#include "shaders/Shader.h"
+#include "shaders/shader.h"
+#include "camera/camera.h"
 
 struct Context {
     GLFWwindow* window;
-    float xPos, yPos, zPos;
-    float xRotate, yRotate, zRotate;
+    glm::vec3 cameraPos;
+    glm::vec3 cameraFront;
+    glm::vec3 cameraUp;
+
+    float fov = -90.0f;
+    
+    float yaw = -90.0f;
+    float pitch = 0.0f;
+    float lastX = 400;
+    float lastY = 300;
+
+    float deltaTime = 0.0f;	// Time between current frame and last frame
+    float lastFrame = 0.0f; // Time of last frame
+
+    bool firstMouse = true;
 } context;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(Context* context);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main() {
     glfwInit();
@@ -39,7 +56,10 @@ int main() {
     }
 
     glfwMakeContextCurrent(context.window);
+    glfwSetInputMode(context.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetFramebufferSizeCallback(context.window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(context.window, mouse_callback);
+    glfwSetScrollCallback(context.window, scroll_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -91,11 +111,6 @@ int main() {
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
         glm::vec3(2.0f,  5.0f, -15.0f),
@@ -109,18 +124,14 @@ int main() {
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -179,6 +190,10 @@ int main() {
     ourShader.setInt("texture2", 1);
 
     while (!glfwWindowShouldClose(context.window)) {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        context.deltaTime = currentFrame - context.lastFrame;
+        context.lastFrame = currentFrame;
+
         processInput(&context);
 
         glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
@@ -191,17 +206,11 @@ int main() {
 
         ourShader.use();
 
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-
-        view = glm::translate(view, glm::vec3(context.xPos, context.yPos, context.zPos));
-        view = glm::rotate(view, context.xRotate, glm::vec3(1.0f, 0.0f, 0.0f));
-        view = glm::rotate(view, context.yRotate, glm::vec3(0.0f, 1.0f, 0.0f));
-        view = glm::rotate(view, context.zRotate, glm::vec3(0.0f, 0.0f, 1.0f));
-        projection = glm::perspective(glm::radians(90.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-        ourShader.setMat4("view", view);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
+
+        glm::mat4 view = camera.GetViewMatrix();
+        ourShader.setMat4("view", view);
 
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
@@ -224,7 +233,6 @@ int main() {
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     glfwTerminate();
     return 0;
@@ -235,44 +243,39 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(Context* context) {
-    if (glfwGetKey(context->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    if (glfwGetKey(context->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(context->window, true);
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        context->yPos = context->yPos - 0.001f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        context->yPos = context->yPos + 0.001f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        context->xPos = context->xPos - 0.001f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        context->xPos = context->xPos + 0.001f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_UP) == GLFW_PRESS) {
-        context->zPos = context->zPos + 0.001f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        context->zPos = context->zPos - 0.001f;
+
+    if (glfwGetKey(context->window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, context->deltaTime);
+    if (glfwGetKey(context->window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, context->deltaTime);
+    if (glfwGetKey(context->window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, context->deltaTime);
+    if (glfwGetKey(context->window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, context->deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (context.firstMouse)
+    {
+        context.lastX = xpos;
+        context.lastY = ypos;
+        context.firstMouse = false;
     }
 
-    if (glfwGetKey(context->window, GLFW_KEY_W) == GLFW_PRESS) {
-        context->xRotate = context->xRotate <= 360.0f ? context->xRotate + 0.001f : 0.0f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_S) == GLFW_PRESS) {
-        context->xRotate = context->xRotate >= -360.0f ? context->xRotate - 0.001f : 0.0f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_D) == GLFW_PRESS) {
-        context->yRotate = context->yRotate <= 360.0f ? context->yRotate + 0.001f : 0.0f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_A) == GLFW_PRESS) {
-        context->yRotate = context->yRotate >= -360.0f ? context->yRotate - 0.001f : 0.0f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_E) == GLFW_PRESS) {
-        context->zRotate = context->zRotate <= 360.0f ? context->zRotate + 0.001f : 0.0f;
-    }
-    if (glfwGetKey(context->window, GLFW_KEY_Q) == GLFW_PRESS) {
-        context->zRotate = context->zRotate >= -360.0f ? context->zRotate - 0.001f : 0.0f;
-    }
+    float xoffset = xpos - context.lastX;
+    float yoffset = context.lastY - ypos;
+
+    context.lastX = xpos;
+    context.lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
