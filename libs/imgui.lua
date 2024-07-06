@@ -3,7 +3,8 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project "ImGui"
 	kind "StaticLib"
 	language "C"
-	architecture "x86_64"
+	cppdialect "C++11"
+	platforms { "x64", "x86" }
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
@@ -42,6 +43,12 @@ project "ImGui"
 			"_IMGUI_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
+
+	filter "platforms:x86"
+	architecture "x86"
+
+	filter "platforms:x64"
+	architecture "x86_64"
 
 	filter "configurations:Debug"
 		runtime "Debug"

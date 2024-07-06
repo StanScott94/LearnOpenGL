@@ -11,6 +11,9 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main() {
+
+    const char* glsl_version = "#version 150";
+
     Window window("Learn OpenGL", SCR_WIDTH, SCR_HEIGHT, true);
     window.Create();
 
@@ -30,7 +33,7 @@ int main() {
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window.GetGlfwWindow(), true);
-    ImGui_ImplOpenGL3_Init("#version 130");
+    ImGui_ImplOpenGL3_Init("#version 150");
 
     bool show_demo_window = true;
 

@@ -13,6 +13,9 @@ libs/Makefile
 **/*.vcxproj.filters
 .vs/
 
+# MacOS
+**/*.DS_Store
+
 # ImGui
 imgui.ini
 

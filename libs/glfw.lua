@@ -3,10 +3,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project "GLFW"
 	kind "StaticLib"
 	language "C"
-	architecture "x86_64"
+	platforms { "x64", "x86" }
 
-    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	includedirs { "glfw/include/" }
 
@@ -55,6 +55,28 @@ project "GLFW"
 			"_GLFW_X11"
 		}
 
+    	filter "system:macosx"
+       		staticruntime "On"
+
+        	files
+        	{
+	            	"glfw/src/cocoa_init.m",
+            		"glfw/src/cocoa_joystick.m",
+            		"glfw/src/cocoa_monitor.m",
+            		"glfw/src/cocoa_window.m",
+            		"glfw/src/cocoa_time.c",
+            		"glfw/src/posix_thread.c",
+            		"glfw/src/nsgl_context.m",
+            		"glfw/src/egl_context.c",
+            		"glfw/src/osmesa_context.c",
+			"glfw/src/posix_module.c"        	
+		}
+
+        	defines
+        	{
+           		"_GLFW_COCOA"
+        	}
+
 	filter "system:windows"
 		systemversion "latest"
 		staticruntime "On"
@@ -78,6 +100,12 @@ project "GLFW"
 			"_GLFW_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
+
+	filter "platforms:x86"
+	architecture "x86"
+
+	filter "platforms:x64"
+	architecture "x86_64"
 
 	filter "configurations:Debug"
 		runtime "Debug"
