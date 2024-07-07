@@ -32,7 +32,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project("LearnOpenGL")
 kind("ConsoleApp")
 language("C++")
-cppdialect("C++11")
+cppdialect("C++17")
 
 targetdir("bin/" .. outputdir .. "/%{prj.name}")
 objdir("bin-int/" .. outputdir .. "/%{prj.name}")

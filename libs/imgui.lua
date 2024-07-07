@@ -3,7 +3,6 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project "ImGui"
 	kind "StaticLib"
 	language "C"
-	cppdialect "C++11"
 	platforms { "x64", "x86" }
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
@@ -25,7 +24,6 @@ project "ImGui"
     
 	filter "system:linux"
 		pic "On"
-
 		systemversion "latest"
 		staticruntime "On"
 
@@ -33,6 +31,15 @@ project "ImGui"
 		{
 			"_IMGUI_X11"
 		}
+
+    	filter "system:macosx"
+       		staticruntime "On"
+		cppdialect "C++11"
+
+        	defines
+        	{
+           		"_IMGUI_COCOA"
+        	}
 
 	filter "system:windows"
 		systemversion "latest"

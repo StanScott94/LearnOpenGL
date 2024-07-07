@@ -11,9 +11,6 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main() {
-
-    const char* glsl_version = "#version 150";
-
     Window window("Learn OpenGL", SCR_WIDTH, SCR_HEIGHT, true);
     window.Create();
 
@@ -26,22 +23,26 @@ int main() {
     renderer.Create();
 
     // Setup ImGui 
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window.GetGlfwWindow(), true);
-    ImGui_ImplOpenGL3_Init("#version 150");
+
+    #ifdef __APPLE__
+        ImGui_ImplOpenGL3_Init("#version 150");
+    #else
+        ImGui_ImplOpenGL3_Init("#version 130");
+    #endif
 
     bool show_demo_window = true;
 
     while (!window.ShouldClose()) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderer.Start();
-        
+        printf("HELLO");
         for (int i = 0; i < 1000; i++) {
             float x = (float)rand()/(float)(RAND_MAX);
             float y = (float)rand()/(float)(RAND_MAX);
