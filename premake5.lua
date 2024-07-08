@@ -44,11 +44,12 @@ includedirs({
 	"libs/glm/",
 	"libs/imgui/",
 	"libs/imgui/examples",
+	"libs/stb/"
 })
 
 files({
 	"src/**.cpp",
-	"src/**.h",
+	"src/**.h"
 })
 
 links({
@@ -56,6 +57,7 @@ links({
 	"GLM",
 	"GLAD",
 	"ImGui",
+	"STB",
 })
 
 filter("system:linux")
@@ -92,3 +94,4 @@ include("libs/glfw.lua")
 include("libs/glad.lua")
 include("libs/glm.lua")
 include("libs/imgui.lua")
+include("libs/stb.lua")

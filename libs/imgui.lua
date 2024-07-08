@@ -5,8 +5,8 @@ project "ImGui"
 	language "C"
 	platforms { "x64", "x86" }
 
-    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+    	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+    	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	includedirs { "imgui/", "glad/include", "glfw/include/" }
 
