@@ -1,6 +1,7 @@
 # Target directories
 bin/
 bin-int/
+libs/submodules
 
 # Linux
 Makefile
