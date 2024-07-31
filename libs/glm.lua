@@ -8,11 +8,11 @@ project "GLM"
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	includedirs { "glm/" }
+	includedirs { "submodules/glm/" }
 
 	files
 	{
-		"glm/glm/**"
+		"submodules/glm/glm/**"
 	}
     
 	filter "system:linux"

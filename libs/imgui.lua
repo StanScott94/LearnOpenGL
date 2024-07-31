@@ -8,13 +8,13 @@ project "ImGui"
     	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	includedirs { "imgui/", "glad/include", "glfw/include/" }
+	includedirs { "submodules/imgui/", "glad/include", "submodules/glfw/include/" }
 
 	files
 	{
-		"imgui/*.cpp",
-		"imgui/backends/imgui_impl_glfw.cpp",
-		"imgui/backends/imgui_impl_opengl3.cpp"
+		"submodules/imgui/*.cpp",
+		"submodules/imgui/backends/imgui_impl_glfw.cpp",
+		"submodules/imgui/backends/imgui_impl_opengl3.cpp"
 	}
 
 	defines 

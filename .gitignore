@@ -21,7 +21,6 @@ libs/Makefile
 imgui.ini
 
 # Submodules
-libs/
-!libs/*.lua
+libs/submodules/
 
 .vscode

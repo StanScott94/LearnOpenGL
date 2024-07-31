@@ -8,7 +8,7 @@ project "STB"
     	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	includedirs { "stb/" }
+	includedirs { "submodules/stb/" }
 
 	files { 
 		"stb/stbimage.cpp"

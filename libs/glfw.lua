@@ -8,24 +8,24 @@ project "GLFW"
 	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	includedirs { "glfw/include/" }
+	includedirs { "submodules/glfw/include/" }
 
 	files
 	{
---		"glfw/include/GLFW/glfw3.h",
---		"glfw/include/GLFW/glfw3native.h",
-		"glfw/src/glfw_config.h",
-		"glfw/src/context.c",
-		"glfw/src/init.c",
-		"glfw/src/input.c",
-		"glfw/src/monitor.c",
-		"glfw/src/vulkan.c",
-		"glfw/src/window.c",
-		"glfw/src/platform.c",
-		"glfw/src/null_init.c",
-		"glfw/src/null_monitor.c",
-		"glfw/src/null_window.c",
-		"glfw/src/null_joystick.c"
+--		"submodules/glfw/include/GLFW/glfw3.h",
+--		"submodules/glfw/include/GLFW/glfw3native.h",
+		"submodules/glfw/src/glfw_config.h",
+		"submodules/glfw/src/context.c",
+		"submodules/glfw/src/init.c",
+		"submodules/glfw/src/input.c",
+		"submodules/glfw/src/monitor.c",
+		"submodules/glfw/src/vulkan.c",
+		"submodules/glfw/src/window.c",
+		"submodules/glfw/src/platform.c",
+		"submodules/glfw/src/null_init.c",
+		"submodules/glfw/src/null_monitor.c",
+		"submodules/glfw/src/null_window.c",
+		"submodules/glfw/src/null_joystick.c"
 	}
     
 	filter "system:linux"
@@ -36,18 +36,18 @@ project "GLFW"
 
 		files
 		{
-			"glfw/src/x11_init.c",
-			"glfw/src/x11_monitor.c",
-			"glfw/src/x11_window.c",
-			"glfw/src/xkb_unicode.c",
-			"glfw/src/posix_time.c",
-			"glfw/src/posix_thread.c",
-			"glfw/src/glx_context.c",
-			"glfw/src/egl_context.c",
-			"glfw/src/osmesa_context.c",
-			"glfw/src/linux_joystick.c",
-			"glfw/src/posix_module.c",
-			"glfw/src/posix_poll.c"
+			"submodules/glfw/src/x11_init.c",
+			"submodules/glfw/src/x11_monitor.c",
+			"submodules/glfw/src/x11_window.c",
+			"submodules/glfw/src/xkb_unicode.c",
+			"submodules/glfw/src/posix_time.c",
+			"submodules/glfw/src/posix_thread.c",
+			"submodules/glfw/src/glx_context.c",
+			"submodules/glfw/src/egl_context.c",
+			"submodules/glfw/src/osmesa_context.c",
+			"submodules/glfw/src/linux_joystick.c",
+			"submodules/glfw/src/posix_module.c",
+			"submodules/glfw/src/posix_poll.c"
 		}
 
 		defines
@@ -60,16 +60,16 @@ project "GLFW"
 
         	files
         	{
-	            	"glfw/src/cocoa_init.m",
-            		"glfw/src/cocoa_joystick.m",
-            		"glfw/src/cocoa_monitor.m",
-            		"glfw/src/cocoa_window.m",
-            		"glfw/src/cocoa_time.c",
-            		"glfw/src/posix_thread.c",
-            		"glfw/src/nsgl_context.m",
-            		"glfw/src/egl_context.c",
-            		"glfw/src/osmesa_context.c",
-			"glfw/src/posix_module.c"        	
+	            	"submodules/glfw/src/cocoa_init.m",
+            		"submodules/glfw/src/cocoa_joystick.m",
+            		"submodules/glfw/src/cocoa_monitor.m",
+            		"submodules/glfw/src/cocoa_window.m",
+            		"submodules/glfw/src/cocoa_time.c",
+            		"submodules/glfw/src/posix_thread.c",
+            		"submodules/glfw/src/nsgl_context.m",
+            		"submodules/glfw/src/egl_context.c",
+            		"submodules/glfw/src/osmesa_context.c",
+			"submodules/glfw/src/posix_module.c"        	
 		}
 
         	defines
@@ -83,16 +83,16 @@ project "GLFW"
 
 		files
 		{
-			"glfw/src/win32_init.c",
-			"glfw/src/win32_joystick.c",
-			"glfw/src/win32_monitor.c",
-			"glfw/src/win32_time.c",
-			"glfw/src/win32_thread.c",
-			"glfw/src/win32_window.c",
-			"glfw/src/wgl_context.c",
-			"glfw/src/egl_context.c",
-			"glfw/src/osmesa_context.c",
-			"glfw/src/win32_module.c"
+			"submodules/glfw/src/win32_init.c",
+			"submodules/glfw/src/win32_joystick.c",
+			"submodules/glfw/src/win32_monitor.c",
+			"submodules/glfw/src/win32_time.c",
+			"submodules/glfw/src/win32_thread.c",
+			"submodules/glfw/src/win32_window.c",
+			"submodules/glfw/src/wgl_context.c",
+			"submodules/glfw/src/egl_context.c",
+			"submodules/glfw/src/osmesa_context.c",
+			"submodules/glfw/src/win32_module.c"
 		}
 
 		defines 

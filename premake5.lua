@@ -40,11 +40,11 @@ objdir("bin-int/" .. outputdir .. "/%{prj.name}")
 includedirs({
 	"include/",
 	"libs/glad/include/",
-	"libs/glfw/include/",
-	"libs/glm/",
-	"libs/imgui/",
-	"libs/imgui/examples",
-	"libs/stb/"
+	"libs/submodules/glfw/include/",
+	"libs/submodules/glm/",
+	"libs/submodules/imgui/",
+	"libs/submodules/imgui/examples",
+	"libs/submodules/stb/"
 })
 
 files({
