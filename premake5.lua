@@ -44,12 +44,12 @@ includedirs({
 	"libs/submodules/glm/",
 	"libs/submodules/imgui/",
 	"libs/submodules/imgui/examples",
-	"libs/submodules/stb/"
+	"libs/submodules/stb/",
 })
 
 files({
 	"src/**.cpp",
-	"src/**.h"
+	"src/**.h",
 })
 
 links({
@@ -58,6 +58,12 @@ links({
 	"GLAD",
 	"ImGui",
 	"STB",
+})
+
+postbuildcommands({
+	"{MKDIR} %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.vert %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.frag %{cfg.targetdir}/shaders",
 })
 
 filter("system:linux")
@@ -74,8 +80,10 @@ defines({
 filter("system:macosx")
 links({
 	"Cocoa.framework",
-        "IOKit.framework",
-        "CoreFoundation.framework",
+	"IOKit.framework",
+	"CoreFoundation.framework",
+	"QuartzCore.framework",
+	"Metal.framework",
 })
 
 filter("system:windows")
