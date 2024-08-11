@@ -54,7 +54,6 @@ files({
 
 links({
 	"GLFW",
-	"GLM",
 	"GLAD",
 	"ImGui",
 	"STB",
