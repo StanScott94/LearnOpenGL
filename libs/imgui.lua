@@ -3,18 +3,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project "ImGui"
 	kind "StaticLib"
 	language "C"
-	architecture "x86_64"
+	platforms { "x64", "x86" }
 
-    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
+    	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+    	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	
-	includedirs { "imgui/", "glad/include", "glfw/include/" }
+	includedirs { "submodules/imgui/", "glad/include", "submodules/glfw/include/" }
 
 	files
 	{
-		"imgui/*.cpp",
-		"imgui/backends/imgui_impl_glfw.cpp",
-		"imgui/backends/imgui_impl_opengl3.cpp"
+		"submodules/imgui/*.cpp",
+		"submodules/imgui/backends/imgui_impl_glfw.cpp",
+		"submodules/imgui/backends/imgui_impl_opengl3.cpp"
 	}
 
 	defines 
@@ -24,7 +24,6 @@ project "ImGui"
     
 	filter "system:linux"
 		pic "On"
-
 		systemversion "latest"
 		staticruntime "On"
 
@@ -32,6 +31,15 @@ project "ImGui"
 		{
 			"_IMGUI_X11"
 		}
+
+    	filter "system:macosx"
+       		staticruntime "On"
+		cppdialect "C++11"
+
+        	defines
+        	{
+           		"_IMGUI_COCOA"
+        	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -42,6 +50,12 @@ project "ImGui"
 			"_IMGUI_WIN32",
 			"_CRT_SECURE_NO_WARNINGS"
 		}
+
+	filter "platforms:x86"
+	architecture "x86"
+
+	filter "platforms:x64"
+	architecture "x86_64"
 
 	filter "configurations:Debug"
 		runtime "Debug"

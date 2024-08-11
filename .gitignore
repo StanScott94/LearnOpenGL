@@ -1,5 +1,7 @@
+# Target directories
 bin/
 bin-int/
+libs/submodules
 
 # Linux
 Makefile
@@ -13,7 +15,13 @@ libs/Makefile
 **/*.vcxproj.filters
 .vs/
 
+# MacOS
+**/*.DS_Store
+
 # ImGui
 imgui.ini
+
+# Submodules
+libs/submodules/
 
 .vscode

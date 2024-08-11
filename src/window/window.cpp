@@ -14,18 +14,32 @@ Window::Window(const char *title, unsigned int width, unsigned int height, bool 
 Window::~Window() {
 }
 
+void error_callback(int error, const char* description) {
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
 bool Window::Create() {
+    
+    glfwSetErrorCallback(error_callback);
+    
     if (!glfwInit()) {
         fprintf(stderr, "Failed to init GLFW\n");
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    #else
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    #endif
+
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     printf("GLFW version: %s\n", glfwGetVersionString());
-
+    
     m_Window = glfwCreateWindow(m_Data.width, m_Data.height, m_Data.title, NULL, NULL);
 
     if (m_Window == NULL) {

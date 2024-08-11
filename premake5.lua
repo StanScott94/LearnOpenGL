@@ -1,80 +1,104 @@
-workspace "LearnOpenGL"
-	architecture "x86_64"
-    configurations {
-        "Debug",
-        "Release"
-    }
+workspace("LearnOpenGL")
+platforms({ "x64", "x86" })
+configurations({
+	"Debug",
+	"Release",
+})
 
-    startproject "LearnOpenGL"
+startproject("LearnOpenGL")
 
-    flags {
-        "MultiProcessorCompile"
-    }
+flags({
+	"MultiProcessorCompile",
+})
 
-    filter "configurations:Debug"
-        defines {
-            "DEBUG",
-            "DEBUG_SHADER"
-        }
-        symbols "On"
+filter("configurations:Debug")
+defines({
+	"DEBUG",
+	"DEBUG_SHADER",
+})
+symbols("On")
 
-    filter "configurations:Release"
-        defines {
-            "RELEASE"
-        }
-        optimize "Speed"
-        flags {
-            "LinkTimeOptimization"
-        }
+filter("configurations:Release")
+defines({
+	"RELEASE",
+})
+optimize("Speed")
+flags({
+	"LinkTimeOptimization",
+})
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+project("LearnOpenGL")
+kind("ConsoleApp")
+language("C++")
+cppdialect("C++17")
 
-project "LearnOpenGL"
-    kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++17"
-	architecture "x86_64"
+targetdir("bin/" .. outputdir .. "/%{prj.name}")
+objdir("bin-int/" .. outputdir .. "/%{prj.name}")
 
-    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+includedirs({
+	"include/",
+	"libs/glad/include/",
+	"libs/submodules/glfw/include/",
+	"libs/submodules/glm/",
+	"libs/submodules/imgui/",
+	"libs/submodules/imgui/examples",
+	"libs/submodules/stb/",
+})
 
-    includedirs {
-        "include/",
-        "libs/glad/include/",
-        "libs/glfw/include/",
-        "libs/glm/",
-        "libs/imgui/",
-        "libs/imgui/examples" 
-    }
-    
-    files {
-        "src/**.cpp",
-        "src/**.h"
-    }
+files({
+	"src/**.cpp",
+	"src/**.h",
+})
 
-    links {
-        "GLFW",
-        "GLM",
-        "GLAD",
-        "ImGui" 
-    }
+links({
+	"GLFW",
+	"GLAD",
+	"ImGui",
+	"STB",
+})
 
-    filter "system:linux"
-        links {
-            "dl",
-            "pthread" 
-        }
-        defines {
-            "_X11"
-        }
+postbuildcommands({
+	"{MKDIR} %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.vert %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.frag %{cfg.targetdir}/shaders",
+})
 
-    filter "system:windows"
-        defines {
-            "_WINDOWS"
-        }
+filter("system:linux")
+systemversion("latest")
+toolset("clang")
+links({
+	"dl",
+	"pthread",
+})
+defines({
+	"_X11",
+})
 
-include "libs/glfw.lua"
-include "libs/glad.lua"
-include "libs/glm.lua"
-include "libs/imgui.lua"
+filter("system:macosx")
+links({
+	"Cocoa.framework",
+	"IOKit.framework",
+	"CoreFoundation.framework",
+	"QuartzCore.framework",
+	"Metal.framework",
+})
+
+filter("system:windows")
+systemversion("latest")
+defines({
+	"_WINDOWS",
+})
+
+filter("platforms:x86")
+architecture("x86")
+
+filter("platforms:x64")
+architecture("x86_64")
+
+include("libs/glfw.lua")
+include("libs/glad.lua")
+include("libs/glm.lua")
+include("libs/imgui.lua")
+include("libs/stb.lua")
