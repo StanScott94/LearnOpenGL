@@ -5,8 +5,8 @@ kind("StaticLib")
 language("C")
 platforms({ "x64", "x86" })
 
-targetdir("../bin/" .. outputdir .. "/%{prj.name}")
-objdir("../bin-int/" .. outputdir .. "/%{prj.name}")
+targetdir("../bin/" .. OUTPUT_DIR .. "/%{prj.name}")
+objdir("../bin-int/" .. OUTPUT_DIR .. "/%{prj.name}")
 
 includedirs({ "glad/include/" })
 
@@ -44,4 +44,3 @@ symbols("on")
 filter("configurations:Release")
 runtime("Release")
 optimize("on")
-

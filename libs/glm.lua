@@ -1,52 +1,49 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project "GLM"
-	kind "StaticLib"
-	language "C"
-	platforms { "x64", "x86" }
+project("GLM")
+kind("StaticLib")
+language("C")
+platforms({ "x64", "x86" })
 
-    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	includedirs { "submodules/glm/" }
+targetdir("../bin/" .. OUTPUT_DIR .. "/%{prj.name}")
+objdir("../bin-int/" .. OUTPUT_DIR .. "/%{prj.name}")
 
-	files
-	{
-		"submodules/glm/glm/**"
-	}
-    
-	filter "system:linux"
-		pic "On"
+includedirs({ "submodules/glm/" })
 
-		systemversion "latest"
-		staticruntime "On"
+files({
+	"submodules/glm/glm/**",
+})
 
-		defines
-		{
-			"_GLM_X11"
-		}
+filter("system:linux")
+pic("On")
 
-	filter "system:windows"
-		systemversion "latest"
-		staticruntime "On"
+systemversion("latest")
+staticruntime("On")
 
-		defines 
-		{ 
-			"_GLM_WIN32",
-			"_CRT_SECURE_NO_WARNINGS"
-		}
+defines({
+	"_GLM_X11",
+})
 
+filter("system:windows")
+systemversion("latest")
+staticruntime("On")
 
-	filter "platforms:x86"
-	architecture "x86"
+defines({
+	"_GLM_WIN32",
+	"_CRT_SECURE_NO_WARNINGS",
+})
 
-	filter "platforms:x64"
-	architecture "x86_64"
+filter("platforms:x86")
+architecture("x86")
 
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
+filter("platforms:x64")
+architecture("x86_64")
 
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "on"
+filter("configurations:Debug")
+runtime("Debug")
+symbols("on")
+
+filter("configurations:Release")
+runtime("Release")
+optimize("on")
+

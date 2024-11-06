@@ -1,82 +1,56 @@
 workspace("LearnOpenGL")
 platforms({ "x64", "x86" })
-configurations({
-	"Debug",
-	"Release",
-})
-
+configurations({ "Debug", "Release" })
 startproject("LearnOpenGL")
 
-flags({
-	"MultiProcessorCompile",
-})
+flags({ "MultiProcessorCompile" })
 
 filter("configurations:Debug")
-defines({
-	"DEBUG",
-	"DEBUG_SHADER",
-})
+defines({ "DEBUG", "DEBUG_SHADER" })
 symbols("On")
 
 filter("configurations:Release")
-defines({
-	"RELEASE",
-})
+defines({ "RELEASE" })
 optimize("Speed")
-flags({
-	"LinkTimeOptimization",
-})
+flags({ "LinkTimeOptimization" })
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+OUTPUT_DIR = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project("LearnOpenGL")
 kind("ConsoleApp")
-language("C++")
-cppdialect("C++17")
+language("C")
+buildoptions({ "-std=c11" })
 
-targetdir("bin/" .. outputdir .. "/%{prj.name}")
-objdir("bin-int/" .. outputdir .. "/%{prj.name}")
+targetdir("bin/" .. OUTPUT_DIR .. "/%{prj.name}")
+objdir("bin-int/" .. OUTPUT_DIR .. "/%{prj.name}")
 
 includedirs({
 	"include/",
 	"libs/glad/include/",
 	"libs/submodules/glfw/include/",
 	"libs/submodules/glm/",
-	"libs/submodules/imgui/",
-	"libs/submodules/imgui/examples",
 	"libs/submodules/stb/",
 })
 
 files({
-	"src/**.cpp",
+	"src/**.c",
 	"src/**.h",
 })
 
 links({
 	"GLFW",
 	"GLAD",
-	"ImGui",
 	"STB",
-})
+}) -- Use UNIX-style commands for compatibility with Cygwin and macOS
 
 postbuildcommands({
-	"{MKDIR} %{cfg.targetdir}/shaders",
-	"{COPY} shaders/*.vert %{cfg.targetdir}/shaders",
-	"{COPY} shaders/*.frag %{cfg.targetdir}/shaders",
-})
-
-filter("system:linux")
-systemversion("latest")
-toolset("clang")
-links({
-	"dl",
-	"pthread",
-})
-defines({
-	"_X11",
+	'if [ ! -d "%{cfg.targetdir}/shaders" ]; then mkdir -p "%{cfg.targetdir}/shaders"; fi',
+	'cp shaders/*.vert "%{cfg.targetdir}/shaders/"',
+	'cp shaders/*.frag "%{cfg.targetdir}/shaders/"',
 })
 
 filter("system:macosx")
+toolset("clang")
 links({
 	"Cocoa.framework",
 	"IOKit.framework",
@@ -87,8 +61,16 @@ links({
 
 filter("system:windows")
 systemversion("latest")
-defines({
-	"_WINDOWS",
+defines({ "_WINDOWS" })
+toolset("gcc")
+
+filter("system:linux")
+systemversion("latest")
+defines({ "_X11" })
+toolset("clang")
+links({
+	"dl",
+	"pthread",
 })
 
 filter("platforms:x86")
@@ -100,5 +82,4 @@ architecture("x86_64")
 include("libs/glfw.lua")
 include("libs/glad.lua")
 include("libs/glm.lua")
-include("libs/imgui.lua")
 include("libs/stb.lua")

@@ -2,34 +2,29 @@
 
 #include "engine.h"
 
-struct WindowData {
+typedef struct {
     const char *title;
     unsigned int width, height;
-    bool vsync;
-};
+    int vsync;
+} WindowData;
 
-class Window {
-
-public:
-    Window(const char *title, unsigned int width, unsigned int height, bool vsync);
-    ~Window();
-
-    bool Create();
-    void Destroy();
-
-    void Update();
-
-    bool ShouldClose();
-
-    bool IsVsync();
-    void SetVsync(bool vsync);
-
-    GLFWwindow *GetGlfwWindow();
-    WindowData *GetDataPointer();
-
-    glm::ivec2 GetSize();
-
-private:
+typedef struct {
     GLFWwindow *m_Window;
     WindowData m_Data;
-};
+} Window;
+
+// Function declarations
+Window* Window_Create(const char *title, unsigned int width, unsigned int height, int vsync);
+void Window_Destroy(Window *window);
+
+void Window_Update(Window *window);
+int Window_ShouldClose(Window *window);
+
+int Window_IsVsync(Window *window);
+void Window_SetVsync(Window *window, int vsync);
+
+GLFWwindow *Window_GetGlfwWindow(Window *window);
+WindowData *Window_GetDataPointer(Window *window);
+
+glm::ivec2 Window_GetSize(Window *window);
+

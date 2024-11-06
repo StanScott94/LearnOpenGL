@@ -1,29 +1,30 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project "STB"
-	kind "StaticLib"
-	language "C"
-	platforms { "x64", "x86" }
+project("STB")
+kind("StaticLib")
+language("C")
+platforms({ "x64", "x86" })
 
-    	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
-    	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	includedirs { "submodules/stb/" }
+targetdir("../bin/" .. OUTPUT_DIR .. "/%{prj.name}")
+objdir("../bin-int/" .. OUTPUT_DIR .. "/%{prj.name}")
 
-	files { 
-		"stb/stbimage.cpp"
-	}
+includedirs({ "submodules/stb/" })
 
-	filter "platforms:x86"
-	architecture "x86"
+files({
+	"stb/stbimage.cpp",
+})
 
-	filter "platforms:x64"
-	architecture "x86_64"
+filter("platforms:x86")
+architecture("x86")
 
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
+filter("platforms:x64")
+architecture("x86_64")
 
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "on"
+filter("configurations:Debug")
+runtime("Debug")
+symbols("on")
+
+filter("configurations:Release")
+runtime("Release")
+optimize("on")
+
