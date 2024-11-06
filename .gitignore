@@ -1,19 +1,20 @@
 # Target directories
 bin/
 bin-int/
-libs/submodules
 
-# Linux
+# Make / Premake
 Makefile
 libs/Makefile
 **/*.make
 
-# Windows
+# Visual Studio Code
 **/*.sln
 **/*.vcxproj
 **/*.vcxproj.user
 **/*.vcxproj.filters
-.vs/
+.vs/*
+.vscode
+
 
 # MacOS
 **/*.DS_Store
@@ -22,6 +23,5 @@ libs/Makefile
 imgui.ini
 
 # Submodules
-libs/submodules/
+libs/submodules/*
 
-.vscode

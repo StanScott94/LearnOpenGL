@@ -1,12 +1,9 @@
 [submodule "libs/submodules/glfw"]
 	path = libs/submodules/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "libs/submodules/glm"]
-	path = libs/submodules/glm
-	url = https://github.com/g-truc/glm.git
-[submodule "libs/submodules/imgui"]
-	path = libs/submodules/imgui
-	url = https://github.com/ocornut/imgui.git
 [submodule "libs/submodules/stb"]
 	path = libs/submodules/stb
 	url = https://github.com/nothings/stb.git
+[submodule "libs/submodules/cglm"]
+	path = libs/submodules/cglm
+	url = git@github.com:recp/cglm.git
