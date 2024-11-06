@@ -1,6 +1,6 @@
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+OUTPUT_DIR = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project("GLM")
+project("CGLM")
 kind("StaticLib")
 language("C")
 platforms({ "x64", "x86" })
@@ -8,11 +8,9 @@ platforms({ "x64", "x86" })
 targetdir("../bin/" .. OUTPUT_DIR .. "/%{prj.name}")
 objdir("../bin-int/" .. OUTPUT_DIR .. "/%{prj.name}")
 
-includedirs({ "submodules/glm/" })
+includedirs({ "submodules/cglm/include" })
 
-files({
-	"submodules/glm/glm/**",
-})
+files({ "submodules/cglm/src/**.c", "submodules/cglm/include/**.h" })
 
 filter("system:linux")
 pic("On")
@@ -46,4 +44,3 @@ symbols("on")
 filter("configurations:Release")
 runtime("Release")
 optimize("on")
-

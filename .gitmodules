@@ -1,9 +1,9 @@
 [submodule "libs/submodules/glfw"]
 	path = libs/submodules/glfw
-	url = https://github.com/glfw/glfw.git
+	url = git@github.com:glfw/glfw.git
 [submodule "libs/submodules/stb"]
 	path = libs/submodules/stb
-	url = https://github.com/nothings/stb.git
+	url = git@github.com:nothings/stb.git
 [submodule "libs/submodules/cglm"]
 	path = libs/submodules/cglm
 	url = git@github.com:recp/cglm.git

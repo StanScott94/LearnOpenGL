@@ -1,4 +1,4 @@
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+OUTPUT_DIR = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project("GLFW")
 kind("StaticLib")
@@ -29,9 +29,9 @@ files({
 
 filter("system:linux")
 pic("On")
-
 systemversion("latest")
 staticruntime("On")
+defines({ "_GLFW_X11" })
 
 files({
 	"submodules/glfw/src/x11_init.c",
@@ -48,12 +48,9 @@ files({
 	"submodules/glfw/src/posix_poll.c",
 })
 
-defines({
-	"_GLFW_X11",
-})
-
 filter("system:macosx")
 staticruntime("On")
+defines({ "_GLFW_COCOA" })
 
 files({
 	"submodules/glfw/src/cocoa_init.m",
@@ -68,13 +65,10 @@ files({
 	"submodules/glfw/src/posix_module.c",
 })
 
-defines({
-	"_GLFW_COCOA",
-})
-
 filter("system:windows")
 systemversion("latest")
 staticruntime("On")
+defines({ "_GLFW_WIN32", "_CRT_SECURE_NO_WARNINGS" })
 
 files({
 	"submodules/glfw/src/win32_init.c",
@@ -89,10 +83,14 @@ files({
 	"submodules/glfw/src/win32_module.c",
 })
 
-defines({
-	"_GLFW_WIN32",
-	"_CRT_SECURE_NO_WARNINGS",
+links({
+	"opengl32",
+	"gdi32",
+	"glfw3",
 })
+
+filter("toolset:gcc")
+links({ "GL", "GLEW" })
 
 filter("platforms:x86")
 architecture("x86")
@@ -107,4 +105,3 @@ symbols("on")
 filter("configurations:Release")
 runtime("Release")
 optimize("on")
-

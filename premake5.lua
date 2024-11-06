@@ -28,7 +28,7 @@ includedirs({
 	"include/",
 	"libs/glad/include/",
 	"libs/submodules/glfw/include/",
-	"libs/submodules/glm/",
+	"libs/submodules/cglm/include/",
 	"libs/submodules/stb/",
 })
 
@@ -40,6 +40,7 @@ files({
 links({
 	"GLFW",
 	"GLAD",
+	"CGLM",
 	"STB",
 }) -- Use UNIX-style commands for compatibility with Cygwin and macOS
 
@@ -81,5 +82,5 @@ architecture("x86_64")
 
 include("libs/glfw.lua")
 include("libs/glad.lua")
-include("libs/glm.lua")
+include("libs/cglm.lua")
 include("libs/stb.lua")
