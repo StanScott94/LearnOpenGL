@@ -1,11 +1,12 @@
+@echo off
+
 if "%1"=="" (
-    echo Please provide an argument: clean or build
+    echo Please provide an argument: clean, build, run-debug
     exit /b 1
 )
 
 set PREMAKE_PATH=.\premake\windows\premake5.exe
 
-REM Check the argument and execute the corresponding command
 if /i "%1"=="clean" (
     call rmdir /S /Q bin
     call rmdir /S /Q bin-int
@@ -17,9 +18,12 @@ if /i "%1"=="clean" (
     for %%f in (libs\*.vcxproj libs\*.vcxproj.filters) do (
         del /Q "%%f"
     )
-) else if /i "%1"=="build" (
+) else if /i "%1"=="build-debug" (
     call %PREMAKE_PATH% vs2022
-) else (
-    echo Invalid argument. Use "clean" or "build".
+    call msbuild LearnOpenGL.sln /p:Configuration=Debug
+) else if /i "%1"=="run-debug" (
+    call bin\Debug-windows-x86\LearnOpenGL\LearnOpenGL.exe
+) else ( else (
+    echo Invalid argument
     exit /b 1
 )

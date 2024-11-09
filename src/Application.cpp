@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "engine.h"
 #include "gl_utils.h"
 
