@@ -12,20 +12,17 @@ flags({
 })
 
 filter("configurations:Debug")
-defines({
-	"DEBUG",
-	"DEBUG_SHADER",
-})
+staticruntime("On")
+runtime("Debug")
+defines({ "DEBUG", "DEBUG_SHADER" })
 symbols("On")
 
 filter("configurations:Release")
-defines({
-	"RELEASE",
-})
+staticruntime("On")
+runtime("Release")
+defines({ "RELEASE" })
 optimize("Speed")
-flags({
-	"LinkTimeOptimization",
-})
+flags({ "LinkTimeOptimization" })
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -38,13 +35,13 @@ targetdir("bin/" .. outputdir .. "/%{prj.name}")
 objdir("bin-int/" .. outputdir .. "/%{prj.name}")
 
 includedirs({
-	"include/",
-	"libs/glad/include/",
-	"libs/submodules/glfw/include/",
-	"libs/submodules/glm/",
-	"libs/submodules/imgui/",
+	"include",
+	"libs/glad/include",
+	"libs/submodules/glfw/include",
+	"libs/submodules/glm",
+	"libs/submodules/imgui",
 	"libs/submodules/imgui/examples",
-	"libs/submodules/stb/",
+	"libs/submodules/stb",
 })
 
 files({

@@ -22,7 +22,6 @@ int main() {
     Renderer2D renderer(shader, window.GetDataPointer(), 100);
     renderer.Create();
 
-    // Setup ImGui 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -42,7 +41,6 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderer.Start();
-        printf("HELLO");
         for (int i = 0; i < 1000; i++) {
             float x = (float)rand()/(float)(RAND_MAX);
             float y = (float)rand()/(float)(RAND_MAX);
