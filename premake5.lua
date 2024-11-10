@@ -54,6 +54,7 @@ links({
 	"GLAD",
 	"ImGui",
 	"STB",
+	"gdi32",
 })
 
 postbuildcommands({
