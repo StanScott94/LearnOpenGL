@@ -1,15 +1,15 @@
 workspace("LearnOpenGL")
-platforms({ "x64", "x86" })
+platforms({ "x64" })
 configurations({
 	"Debug",
 	"Release",
 })
 
 startproject("LearnOpenGL")
+flags({ "MultiProcessorCompile" })
 
-flags({
-	"MultiProcessorCompile",
-})
+filter("toolset:clang")
+toolset("gcc")
 
 filter("configurations:Debug")
 staticruntime("On")
@@ -50,28 +50,25 @@ files({
 })
 
 links({
+	"gdi32",
 	"GLFW",
 	"GLAD",
 	"ImGui",
 	"STB",
-	"gdi32",
 })
+
+filter("system:linux")
+systemversion("latest")
+links({
+	"dl",
+	"pthread",
+})
+defines({ "_X11" })
 
 postbuildcommands({
 	"{MKDIR} %{cfg.targetdir}/shaders",
 	"{COPY} shaders/*.vert %{cfg.targetdir}/shaders",
 	"{COPY} shaders/*.frag %{cfg.targetdir}/shaders",
-})
-
-filter("system:linux")
-systemversion("latest")
-toolset("clang")
-links({
-	"dl",
-	"pthread",
-})
-defines({
-	"_X11",
 })
 
 filter("system:macosx")
@@ -83,14 +80,22 @@ links({
 	"Metal.framework",
 })
 
-filter("system:windows")
-systemversion("latest")
-defines({
-	"_WINDOWS",
+postbuildcommands({
+	"{MKDIR} %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.vert %{cfg.targetdir}/shaders",
+	"{COPY} shaders/*.frag %{cfg.targetdir}/shaders",
 })
 
-filter("platforms:x86")
-architecture("x86")
+filter("system:windows")
+systemversion("latest")
+defines({ "_WINDOWS" })
+links({ "OpenGL32" })
+
+postbuildcommands({
+	"{MKDIR} %{cfg.targetdir}\\shaders",
+	"{COPY} shaders\\*.vert %{cfg.targetdir}\\shaders",
+	"{COPY} shaders\\*.frag %{cfg.targetdir}\\shaders",
+})
 
 filter("platforms:x64")
 architecture("x86_64")

@@ -18,11 +18,13 @@ if /i "%1"=="clean" (
     for %%f in (libs\*.vcxproj libs\*.vcxproj.filters) do (
         del /Q "%%f"
     )
-) else if /i "%1"=="build-debug" (
-    call %PREMAKE_PATH% gmake2
-    call msbuild LearnOpenGL.sln /p:Configuration=Debug
+) else if /i "%1"=="build" (
+    echo Run premake5 for gmake2:
+    call %PREMAKE_PATH% --verbose gmake2
+    echo Run make:
+    call make
 ) else if /i "%1"=="run-debug" (
-    call bin\Debug-windows-x86\LearnOpenGL\LearnOpenGL.exe
+    call ./bin/Debug-windows-x86/LearnOpenGL/LearnOpenGL.exe
 ) else ( else (
     echo Invalid argument
     exit /b 1

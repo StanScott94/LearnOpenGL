@@ -1,3 +1,11 @@
+# Local setup
+
+## Windows:
+
+- MSYS2 installed
+    - clang
+    - make
+
 # Dependancies
 
 - See `.gitmodules`

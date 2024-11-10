@@ -3,7 +3,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 project("GLM")
 kind("None")
 language("C++")
-platforms({ "x64", "x86" })
+platforms({ "x64" })
 
 targetdir("../bin/" .. outputdir .. "/%{prj.name}")
 objdir("../bin-int/" .. outputdir .. "/%{prj.name}")
@@ -33,9 +33,6 @@ defines({
 	"_CRT_SECURE_NO_WARNINGS",
 })
 
-filter("platforms:x86")
-architecture("x86")
-
 filter("platforms:x64")
 architecture("x86_64")
 
@@ -46,4 +43,3 @@ symbols("on")
 filter("configurations:Release")
 runtime("Release")
 optimize("on")
-
