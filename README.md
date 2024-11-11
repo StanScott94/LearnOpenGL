@@ -2,9 +2,18 @@
 
 ## Windows:
 
-- MSYS2 installed
-    - clang
-    - make
+TODO: solve conflicting libstdc++-6.dll in Neovim on %PATH%
+
+*Minimal setup for compilation on windows*
+
+- `winget install — accept-source-agreements chocolatey.chocolatey`
+    - `choco install make`
+    - `choco install mingw`
+
+TODO: read later to set up compile_commands.json on Neovim:
+
+- https://medium.com/@adarshroy.formal/setting-up-neovim-on-windows-a-beginner-friendly-no-nonsense-guide-with-cpp-clangd-without-wsl-f792117466a0
+- https://medium.com/unixification/how-to-setup-clangd-with-gcc-headers-and-neovim-lsp-for-competitive-programming-2f3f98425ae1
 
 # Dependancies
 

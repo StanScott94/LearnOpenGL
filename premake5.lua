@@ -8,17 +8,14 @@ configurations({
 startproject("LearnOpenGL")
 flags({ "MultiProcessorCompile" })
 
-filter("toolset:clang")
-toolset("gcc")
-
 filter("configurations:Debug")
-staticruntime("On")
+staticruntime("Off")
 runtime("Debug")
 defines({ "DEBUG", "DEBUG_SHADER" })
 symbols("On")
 
 filter("configurations:Release")
-staticruntime("On")
+staticruntime("Off")
 runtime("Release")
 defines({ "RELEASE" })
 optimize("Speed")
@@ -31,6 +28,7 @@ kind("ConsoleApp")
 language("C++")
 cppdialect("C++17")
 
+windowstargetdir = "bin\\" .. outputdir .. "\\%{prj.name}"
 targetdir("bin/" .. outputdir .. "/%{prj.name}")
 objdir("bin-int/" .. outputdir .. "/%{prj.name}")
 
@@ -50,7 +48,6 @@ files({
 })
 
 links({
-	"gdi32",
 	"GLFW",
 	"GLAD",
 	"ImGui",
@@ -89,12 +86,12 @@ postbuildcommands({
 filter("system:windows")
 systemversion("latest")
 defines({ "_WINDOWS" })
-links({ "OpenGL32" })
+links({ "OpenGL32", "gdi32" })
 
 postbuildcommands({
-	"{MKDIR} %{cfg.targetdir}\\shaders",
-	"{COPY} shaders\\*.vert %{cfg.targetdir}\\shaders",
-	"{COPY} shaders\\*.frag %{cfg.targetdir}\\shaders",
+	"mkdir " .. windowstargetdir .. "\\shaders",
+	"copy shaders\\*.vert " .. windowstargetdir .. "\\shaders",
+	"copy shaders\\*.frag " .. windowstargetdir .. "\\shaders",
 })
 
 filter("platforms:x64")
