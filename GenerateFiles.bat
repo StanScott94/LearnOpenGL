@@ -9,19 +9,25 @@ set PREMAKE_PATH=.\premake\windows\premake5.exe
 
 if /i "%1"=="build" (
     echo Cleaning project
-    call rmdir /S /Q bin
-    call rmdir /S /Q bin-int
-    call del /Q *.make
-    call del Makefile
+    rmdir /S /Q bin
+    rmdir /S /Q bin-int
+    del /Q *.make
+    del Makefile
     for %%f in (libs\*.make) do (
         del /Q "%%f"
     )
     echo Run premake5 for gmake2:
-    call %PREMAKE_PATH% gmake2
+    %PREMAKE_PATH% gmake2
     echo Run make:
-    call make CC=gcc
+    make CC=gcc
 ) else if /i "%1"=="win-run" (
     call bin\Debug-windows-x86_64\LearnOpenGL\LearnOpenGL.exe
+) else if /i "%1"=="test" (
+make --always-make --dry-run ^
+ | grep -wE "gcc|g\+\+" ^
+ | grep -w "\-c" ^
+ | jq -nR "[inputs|{directory:\"bin/Debug-windows-x86_64\", command: (.| gsub(\"\\""\"; \"\")), file: (match(\" [^^ ]+$\").string[1:] | gsub(\"\\""\"; \"\"))}]" ^
+ > compile_commands.json
 ) else ( 
     echo Invalid argument
     exit /b 1

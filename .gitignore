@@ -24,4 +24,6 @@ imgui.ini
 # Submodules
 libs/submodules/
 
-.vscode
+# Nvim
+.cache
+compile_commands.json

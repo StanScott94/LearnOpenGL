@@ -2,13 +2,13 @@
 
 ## Windows:
 
-TODO: solve conflicting libstdc++-6.dll in Neovim on %PATH%
-
 *Minimal setup for compilation on windows*
 
 - `winget install — accept-source-agreements chocolatey.chocolatey`
     - `choco install make`
     - `choco install mingw`
+    - `choco install jq`
+    - `choco install grep`
 
 TODO: read later to set up compile_commands.json on Neovim:
 
@@ -33,10 +33,8 @@ See `Premake5.lua` for more details
 
 ## Windows:
 
-*With Developer Command Prompt (Visual Studio Code)*
-
-- Run `GenerateFiles.bat`
-- Run `msbuild LearnOpenGL.sln /p:Configuration=<Debug, Release>`
+- compile: `GenerateFiles.bat build`
+- run: `GenerateFiles.bat win-run`
 - Application executable can be found under `bin\<configuration>\LearnOpenGL\`
 
 ## Mac
