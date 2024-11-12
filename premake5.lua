@@ -86,6 +86,7 @@ postbuildcommands({
 filter("system:windows")
 systemversion("latest")
 defines({ "_WINDOWS" })
+linkoptions({ "-static-libstdc++", "-static-libgcc" })
 links({ "OpenGL32", "gdi32" })
 
 postbuildcommands({
