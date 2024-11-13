@@ -27,7 +27,8 @@ project("LearnOpenGL")
 kind("ConsoleApp")
 language("C++")
 cppdialect("C++17")
-
+toolset("clang")
+buildoptions({ "-MJbuild/json_fragments/%{file.basename}.json" })
 windowstargetdir = "bin\\" .. outputdir .. "\\%{prj.name}"
 targetdir("bin/" .. outputdir .. "/%{prj.name}")
 objdir("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -86,7 +87,6 @@ postbuildcommands({
 filter("system:windows")
 systemversion("latest")
 defines({ "_WINDOWS" })
-linkoptions({ "-static-libstdc++", "-static-libgcc" })
 links({ "OpenGL32", "gdi32" })
 
 postbuildcommands({

@@ -17,9 +17,9 @@ if /i "%1"=="build" (
         del /Q "%%f"
     )
     echo Run premake5 for gmake2:
-    %PREMAKE_PATH% gmake2
+    %PREMAKE_PATH% --cc=clang gmake2
     echo Run make:
-    make CC=gcc
+    make
 ) else if /i "%1"=="win-run" (
     call bin\Debug-windows-x86_64\LearnOpenGL\LearnOpenGL.exe
 ) else if /i "%1"=="test" (
