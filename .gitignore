@@ -1,6 +1,7 @@
 # Target directories
 bin/
 bin-int/
+build/
 libs/submodules
 
 # Linux

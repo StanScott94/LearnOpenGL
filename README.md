@@ -39,7 +39,15 @@ See `Premake5.lua` for more details
 
 ## Mac
 
+Premake:
 - Run `GenerateFiles.sh`
 - Run `make`
 - Application executable can be found under `bin\<configuration>\LearnOpenGL\`
 
+Cmake:
+- mkdir build
+- cmake -G "Unix Makefiles" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+- cd build
+- make
+- cd bin
+- ./LearnOpenGl
