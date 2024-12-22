@@ -1,18 +1,18 @@
-#include "renderer2d.h"
+#include "renderer3d.h"
 #include "gl_utils.h"
 
 #include "../shader/shader.h"
 #include "../window/window.h"
 
-Renderer2D::Renderer2D(Shader &shader, WindowData *windowData, int maxBatchQuadCount)
+Renderer3D::Renderer3D(Shader &shader, WindowData *windowData, int maxBatchQuadCount)
     : m_Shader(shader), m_WindowData(windowData), m_MaxBatchVertexCount(maxBatchQuadCount * 4) {
 }
 
-Renderer2D::~Renderer2D() {
+Renderer3D::~Renderer3D() {
 }
 
-bool Renderer2D::Create() {
-    m_VertexData = new Renderer2DVertexData[m_MaxBatchVertexCount];
+bool Renderer3D::Create() {
+    m_VertexData = new Renderer3DVertexData[m_MaxBatchVertexCount];
     m_VertexDataPointer = m_VertexData;
 
     GL(glGenVertexArrays(1, &m_Vao));
@@ -20,12 +20,12 @@ bool Renderer2D::Create() {
 
     GL(glGenBuffers(1, &m_Vbo));
     GL(glBindBuffer(GL_ARRAY_BUFFER, m_Vbo));
-    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(Renderer2DVertexData) * m_MaxBatchVertexCount, nullptr, GL_DYNAMIC_DRAW));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(Renderer3DVertexData) * m_MaxBatchVertexCount, nullptr, GL_DYNAMIC_DRAW));
 
     GL(glEnableVertexAttribArray(0));
-    GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Renderer2DVertexData), (void *)0));
+    GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Renderer3DVertexData), (void *)0));
     GL(glEnableVertexAttribArray(1));
-    GL(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2DVertexData), (void *)sizeof(glm::vec3)));
+    GL(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer3DVertexData), (void *)sizeof(glm::vec3)));
 
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
@@ -53,7 +53,7 @@ bool Renderer2D::Create() {
     return true;
 }
 
-void Renderer2D::Destroy() {
+void Renderer3D::Destroy() {
     delete[] m_VertexData;
 
     GL(glDeleteBuffers(1, &m_Vbo));
@@ -61,7 +61,7 @@ void Renderer2D::Destroy() {
     GL(glDeleteVertexArrays(1, &m_Vao));
 }
 
-void Renderer2D::Start() {
+void Renderer3D::Start() {
     m_ProjectionMatrix = glm::ortho(0.0f, (float)m_WindowData->width, (float)m_WindowData->height, 0.0f, 0.0f, -1000.0f);
 
     m_Shader.Bind();
@@ -77,11 +77,11 @@ void Renderer2D::Start() {
     m_TotalBatchCount = 0;
 }
 
-void Renderer2D::End() {
+void Renderer3D::End() {
     DrawBatch();
 }
 
-void Renderer2D::DrawQuad(glm::vec2 position, glm::vec2 scale, glm::vec4 color) {
+void Renderer3D::DrawQuad(glm::vec2 position, glm::vec2 scale, glm::vec4 color) {
     if (m_VertexCount >= m_MaxBatchVertexCount) {
         DrawBatch();
         m_VertexCount = 0;
@@ -104,9 +104,9 @@ void Renderer2D::DrawQuad(glm::vec2 position, glm::vec2 scale, glm::vec4 color) 
     m_VertexCount += 4;
 }
 
-void Renderer2D::DrawImGui() {
+void Renderer3D::DrawImGui() {
 #ifdef DEBUG
-    ImGui::Begin("Renderer 2D");
+    ImGui::Begin("Renderer 3D");
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     ImGui::Text("Batch count: %d", m_TotalBatchCount);
     ImGui::Text("Quad count: %d", m_TotalVertexCount / 4);
@@ -114,15 +114,13 @@ void Renderer2D::DrawImGui() {
 #endif
 }
 
-void Renderer2D::DrawBatch() {
+void Renderer3D::DrawBatch() {
     if (m_VertexCount == 0) {
         return;
     }
 
-    printf("hello /n");
-
     GL(glBindBuffer(GL_ARRAY_BUFFER, m_Vbo));
-    GL(glBufferSubData(GL_ARRAY_BUFFER, 0, m_VertexCount * sizeof(Renderer2DVertexData), m_VertexData));
+    GL(glBufferSubData(GL_ARRAY_BUFFER, 0, m_VertexCount * sizeof(Renderer3DVertexData), m_VertexData));
 
     m_Shader.Bind();
     GL(glBindVertexArray(m_Vao));
