@@ -41,7 +41,6 @@ bool Window::Create() {
     printf("GLFW version: %s\n", glfwGetVersionString());
     
     m_Window = glfwCreateWindow(m_Data.width, m_Data.height, m_Data.title, NULL, NULL);
-
     if (m_Window == NULL) {
         fprintf(stderr, "Failed to create GLFW window");
         return false;
@@ -64,6 +63,8 @@ bool Window::Create() {
         fprintf(stderr, "Failed to init GLAD\n");
         return 1;
     }
+
+    glEnable(GL_DEPTH_TEST);
 
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 

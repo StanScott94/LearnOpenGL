@@ -37,4 +37,5 @@ private:
     const char *m_VertexPath, *m_FragmentPath;
 
     unsigned int CreateShader(const char *name, const char *source, unsigned int type);
+    unsigned int checkCompileErrors(const unsigned int id, const char *name, unsigned int type);
 };

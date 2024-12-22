@@ -119,8 +119,6 @@ void Renderer2D::DrawBatch() {
         return;
     }
 
-    printf("hello /n");
-
     GL(glBindBuffer(GL_ARRAY_BUFFER, m_Vbo));
     GL(glBufferSubData(GL_ARRAY_BUFFER, 0, m_VertexCount * sizeof(Renderer2DVertexData), m_VertexData));
 

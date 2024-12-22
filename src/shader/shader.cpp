@@ -63,13 +63,8 @@ bool Shader::Create() {
     GL(glAttachShader(m_ProgramId, fragmentId));
     GL(glLinkProgram(m_ProgramId));
 
-    int success;
-    char infoLog[512];
-
-    GL(glGetProgramiv(m_ProgramId, GL_LINK_STATUS, &success));
-    if (!success) {
-        GL(glGetShaderInfoLog(m_ProgramId, 512, NULL, infoLog));
-        fprintf(stderr, "Shader Error: Failed to link shader program '%s': \n%s\n", m_Name.c_str(), infoLog);
+    m_ProgramId = checkCompileErrors(m_ProgramId, m_Name.c_str(), GL_PROGRAM);
+    if (m_ProgramId == -1) {
         return false;
     }
 
@@ -155,22 +150,32 @@ void Shader::UniformMat4(std::string name, glm::mat4 &value) {
 
 unsigned int Shader::CreateShader(const char *name, const char *source, unsigned int type) {
     unsigned int id;
-
     GL(id = glCreateShader(type));
     GL(glShaderSource(id, 1, &source, NULL));
     GL(glCompileShader(id));
+    return checkCompileErrors(id, name, type);
+}
 
-    char infoLog[512];
-
+unsigned int Shader::checkCompileErrors(const unsigned int id, const char *name, unsigned int type) {
     int success;
-    GL(glGetShaderiv(id, GL_COMPILE_STATUS, &success));
-    if (!success) {
-        GL(glGetShaderInfoLog(id, 512, NULL, infoLog));
-        fprintf(stderr, "Shader Error: Failed to compile shader '%s': \n%s\n", name, infoLog);
-        return -1;
+    char infoLog[1024];
+    if (type != GL_PROGRAM) {
+        glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(id, 1024, NULL, infoLog);
+            fprintf(stderr, "Shader Error: Failed to compile shader '%s': \n%s\n", name, infoLog);
+            return -1;
+        }
+    } else {
+        glGetProgramiv(id, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(id, 1024, NULL, infoLog);
+            fprintf(stderr, "Shader Error: Failed to link shader program '%s': \n%s\n", name, infoLog);
+            return -1;
+        }
     }
 
     printf("Loaded %s shader '%s'\n", type == 35633 ? "vertex" : "fragment", name);
-
     return id;
 }
+
