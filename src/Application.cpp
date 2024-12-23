@@ -1,8 +1,14 @@
 #include "engine.h"
 
-#include "./shader/shader.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "./window/window.h"
+#include "./shader/shader.h"
 #include "./renderer2d/renderer2d.h"
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -16,7 +22,7 @@ int main() {
         return 1;
     }
 
-    Renderer2D renderer(shader, window.GetDataPointer(), 100);
+    Renderer2D renderer(shader);
     renderer.Create();
 
     IMGUI_CHECKVERSION();
@@ -37,14 +43,7 @@ int main() {
         glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        renderer.Start();
-        for (int i = 0; i < 1000; i++) {
-            float x = (float)rand()/(float)(RAND_MAX);
-            float y = (float)rand()/(float)(RAND_MAX);
-            renderer.DrawQuad(glm::vec2(x * window.GetSize().x, y * window.GetSize().y), glm::vec2(10.0f, 10.0f), glm::vec4(x, y * 0.5f, 0.2f, 1.0f));
-        }
-
-        renderer.End();
+        renderer.Draw();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -62,7 +61,7 @@ int main() {
         window.Update();
     }
 
-    renderer.Destroy();
     shader.Destroy();
     window.Destroy();
 }
+
