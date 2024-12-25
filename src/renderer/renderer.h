@@ -1,13 +1,13 @@
 #pragma once
 
 #include "engine.h"
+#include "../window/window.h"
 #include "../shader/shader.h"
 
-class Renderer2D {
-
+class Renderer {
 public:
-    Renderer2D(Shader &shader);
-    ~Renderer2D();
+    Renderer(Shader &shader, Window &window);
+    ~Renderer();
 
     bool Create();
     void Destroy();
@@ -16,6 +16,8 @@ public:
 
 private:
     Shader &m_Shader;
+    Window &m_Window;
     unsigned int m_Vao;
     unsigned int m_Vbo;
+    void ProcessInput(GLFWwindow *window);
 };

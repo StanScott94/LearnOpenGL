@@ -19,9 +19,8 @@ void error_callback(int error, const char* description) {
 }
 
 bool Window::Create() {
-    
     glfwSetErrorCallback(error_callback);
-    
+
     if (!glfwInit()) {
         fprintf(stderr, "Failed to init GLFW\n");
         return false;
@@ -39,7 +38,7 @@ bool Window::Create() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     printf("GLFW version: %s\n", glfwGetVersionString());
-    
+
     m_Window = glfwCreateWindow(m_Data.width, m_Data.height, m_Data.title, NULL, NULL);
     if (m_Window == NULL) {
         fprintf(stderr, "Failed to create GLFW window");
@@ -53,8 +52,6 @@ bool Window::Create() {
         data->width = width;
         data->height = height;
         GL(glViewport(0, 0, width, height));
-
-        printf("Resized %d, %d\n", data->width, data->height);
     });
 
     glfwMakeContextCurrent(m_Window);
@@ -104,6 +101,6 @@ WindowData *Window::GetDataPointer() {
     return &m_Data;
 }
 
-glm::ivec2 Window::GetSize() {
+std::tuple<int, int> Window::GetSize() {
     return {m_Data.width, m_Data.height};
 }

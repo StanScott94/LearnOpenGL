@@ -1,11 +1,8 @@
+#include "camera/camera.h"
 #include "engine.h"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "./window/window.h"
 #include "./shader/shader.h"
-#include "./renderer2d/renderer2d.h"
+#include "./renderer/renderer.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -22,7 +19,7 @@ int main() {
         return 1;
     }
 
-    Renderer2D renderer(shader);
+    Renderer renderer(shader, window);
     renderer.Create();
 
     IMGUI_CHECKVERSION();
@@ -37,8 +34,6 @@ int main() {
         ImGui_ImplOpenGL3_Init("#version 130");
     #endif
 
-    bool show_demo_window = true;
-
     while (!window.ShouldClose()) {
         glClearColor(0.2f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -50,10 +45,6 @@ int main() {
         ImGui::NewFrame();
 
         renderer.DrawImGui();
-
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow(&show_demo_window);
-        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

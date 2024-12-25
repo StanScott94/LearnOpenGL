@@ -4,7 +4,7 @@ project(LearnOpenGL)
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++17")
     if(NOT WIN32)
         set(GLAD_LIBRARIES dl)
     endif()
@@ -32,10 +32,11 @@ file(GLOB PROJECT_CONFIGS CMakeLists.txt
                          .gitignore
                          .gitmodules
                          .nvimrc)
-file(GLOB GLAD_SOURCES libs/glad/src/glad.c)
 file(GLOB IMGUI_SOURCES libs/submodules/imgui/*.cpp
                         libs/submodules/imgui/backends/imgui_impl_glfw.cpp
                         libs/submodules/imgui/backends/imgui_impl_opengl3.cpp)
+file(GLOB GLAD_SOURCES libs/glad/src/glad.c)
+file(GLOB STB_SOURCES libs/stb/src/stbimage.cpp)
 
 add_definitions(-DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 
@@ -47,6 +48,7 @@ add_executable(
     ${PROJECT_CONFIGS}
     ${IMGUI_SOURCES}
     ${GLAD_SOURCES}
+    ${STB_SOURCES}
 )
 
 option(GLFW_BUILD_DOCS OFF)

@@ -27,7 +27,7 @@ public:
     GLFWwindow *GetGlfwWindow();
     WindowData *GetDataPointer();
 
-    glm::ivec2 GetSize();
+    std::tuple<int, int> GetSize();
 
 private:
     GLFWwindow *m_Window;

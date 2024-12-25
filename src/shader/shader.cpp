@@ -1,6 +1,5 @@
 #include "shader.h"
 
-#include <streambuf>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -35,7 +34,7 @@ bool Shader::Create() {
 
         vertexStringStream << vertexStream.rdbuf();
         fragmentStringStream << fragmentStream.rdbuf();
-
+ 
         vertexStream.close();
         fragmentStream.close();
 
@@ -104,8 +103,9 @@ void Shader::Unbind() {
 }
 
 void Shader::Uniform1f(std::string name, float value) {
-    unsigned int location = m_Uniforms[name];
-    GL(glUniform1f(location, value));
+    GL(glUniform1i(glGetUniformLocation(m_ProgramId, name.c_str()), value));
+    //unsigned int location = m_Uniforms[name];
+    //GL(glUniform1f(location, value));
 }
 
 void Shader::Uniform2f(std::string name, glm::vec2 &value) {
@@ -144,8 +144,9 @@ void Shader::Uniform4i(std::string name, glm::ivec4 &value) {
 }
 
 void Shader::UniformMat4(std::string name, glm::mat4 &value) {
-    unsigned int location = m_Uniforms[name];
-    GL(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)));
+    GL(glUniformMatrix4fv(glGetUniformLocation(m_ProgramId, name.c_str()), 1, GL_FALSE, &value[0][0]));
+    //unsigned int location = m_Uniforms[name];
+    //GL(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)));
 }
 
 unsigned int Shader::CreateShader(const char *name, const char *source, unsigned int type) {
@@ -160,16 +161,16 @@ unsigned int Shader::checkCompileErrors(const unsigned int id, const char *name,
     int success;
     char infoLog[1024];
     if (type != GL_PROGRAM) {
-        glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+        GL(glGetShaderiv(id, GL_COMPILE_STATUS, &success));
         if (!success) {
-            glGetShaderInfoLog(id, 1024, NULL, infoLog);
+            GL(glGetShaderInfoLog(id, 1024, NULL, infoLog));
             fprintf(stderr, "Shader Error: Failed to compile shader '%s': \n%s\n", name, infoLog);
             return -1;
         }
     } else {
-        glGetProgramiv(id, GL_LINK_STATUS, &success);
+        GL(glGetProgramiv(id, GL_LINK_STATUS, &success));
         if (!success) {
-            glGetProgramInfoLog(id, 1024, NULL, infoLog);
+            GL(glGetProgramInfoLog(id, 1024, NULL, infoLog));
             fprintf(stderr, "Shader Error: Failed to link shader program '%s': \n%s\n", name, infoLog);
             return -1;
         }
