@@ -15,9 +15,9 @@ public:
     void DrawImGui();
 
 private:
-    Shader &m_Shader;
-    Window &m_Window;
-    unsigned int m_Vao;
-    unsigned int m_Vbo;
+    Shader &shader;
+    Window &window;
+    unsigned int vao;
+    unsigned int vbo;
     void ProcessInput(GLFWwindow *window);
 };

@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "gl_utils.h"
 #include "../camera/camera.h"
+#include "../shape/cuboid/cuboid.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -15,7 +16,7 @@ float lastX = 0.0f;
 float lastY = 0.0f;
 bool firstMouse = true;
 
-glm::vec3 cubePositions[] = {
+glm::vec3 positions[] = {
     glm::vec3( 0.0f,  0.0f,  0.0f),
     glm::vec3( 2.0f,  5.0f, -15.0f),
     glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -35,7 +36,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-Renderer::Renderer(Shader &shader, Window &window): m_Shader(shader), m_Window(window) {
+Renderer::Renderer(Shader &shader, Window &window): shader(shader), window(window) {
     stbi_set_flip_vertically_on_load(true);
 }
 
@@ -43,67 +44,26 @@ Renderer::~Renderer() {
 }
 
 bool Renderer::Create() {
-    GLFWwindow *glfwWindow = m_Window.GetGlfwWindow();
+    GLFWwindow *glfwWindow = window.GetGlfwWindow();
     glfwSetFramebufferSizeCallback(glfwWindow, framebufferSizeCallback);
     glfwSetCursorPosCallback(glfwWindow, mouseCallback);
     glfwSetScrollCallback(glfwWindow, scrollCallback);
     glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    auto [scrWidth, scrHeight] = m_Window.GetSize();
+    auto [scrWidth, scrHeight] = window.GetSize();
     lastX = scrWidth / 2.0f;
     lastY = scrHeight / 2.0f;
 
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    Cuboid cuboid;
+    cuboid.Create(1.0, 1.0, 1.0);
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    GL(glGenVertexArrays(1, &vao));
+    GL(glGenBuffers(1, &vbo));
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    GL(glBindVertexArray(vao));
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    GL(glGenVertexArrays(1, &m_Vao));
-    GL(glGenBuffers(1, &m_Vbo));
-
-    GL(glBindVertexArray(m_Vao));
-
-    GL(glBindBuffer(GL_ARRAY_BUFFER, m_Vbo));
-    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+    GL(glBufferData(GL_ARRAY_BUFFER, cuboid.GetSizeVertices(), cuboid.GetVertices().data(), GL_STATIC_DRAW));
 
     // position attribute
     GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0));
@@ -154,45 +114,45 @@ bool Renderer::Create() {
     }
     stbi_image_free(data);
 
-    m_Shader.Bind();
-    m_Shader.Uniform1f("texture1", 0);
-    m_Shader.Uniform1f("texture2", 1);
+    shader.Bind();
+    shader.Uniform1f("texture1", 0);
+    shader.Uniform1f("texture2", 1);
 
     return true;
 }
 
 void Renderer::Destroy() {
-    GL(glDeleteBuffers(1, &m_Vbo));
-    GL(glDeleteVertexArrays(1, &m_Vao));
+    GL(glDeleteBuffers(1, &vbo));
+    GL(glDeleteVertexArrays(1, &vao));
 }
 
 void Renderer::Draw() {
-    ProcessInput(m_Window.GetGlfwWindow());
+    ProcessInput(window.GetGlfwWindow());
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
-    m_Shader.Bind();
-    auto [scrWidth, scrHeight] = m_Window.GetSize();
+    shader.Bind();
+    auto [scrWidth, scrHeight] = window.GetSize();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth / (float)scrHeight, 0.1f, 100.0f);
-    m_Shader.UniformMat4("projection", projection);
+    shader.UniformMat4("projection", projection);
 
     glm::mat4 view = camera.GetViewMatrix();
-    m_Shader.UniformMat4("view", view);
+    shader.UniformMat4("view", view);
 
-    glBindVertexArray(m_Vao);
+    glBindVertexArray(vao);
     for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
+            model = glm::translate(model, positions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            m_Shader.UniformMat4("model", model);
+            shader.UniformMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-    m_Shader.Unbind();
+    shader.Unbind();
 
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
