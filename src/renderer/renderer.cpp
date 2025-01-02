@@ -1,14 +1,25 @@
 #include "renderer.h"
 #include "gl_utils.h"
 #include "../camera/camera.h"
-#include "../shape/cuboid/cuboid.h"
+#include "../shape/shape.h"
+#include "gjk.h"
 #include <filesystem>
+#include <ostream>
 
 namespace fs = std::filesystem;
 
-float fov   =  45.0f;
+float fov = 45.0f;
+float rotation = 0.0f;
+float translationX = 2.0f;
+float translationY = 2.0f;
+float translationZ = 0.0f;
+
+Shape shape1("shape1", 1.0f, 1.0f, 1.0f);
+Shape shape2("shape2", 1.0f, 1.0f, 1.0f);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+GJK gjk;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -16,18 +27,7 @@ float lastX = 0.0f;
 float lastY = 0.0f;
 bool firstMouse = true;
 
-glm::vec3 positions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f),
-    glm::vec3( 2.0f,  5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3( 2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f,  3.0f, -7.5f),
-    glm::vec3( 1.3f, -2.0f, -2.5f),
-    glm::vec3( 1.5f,  2.0f, -2.5f),
-    glm::vec3( 1.5f,  0.2f, -1.5f),
-    glm::vec3(-1.3f,  1.0f, -1.5f)
-};
+glm::mat4 identityMatrix = glm::mat4(1.0f);
 
 unsigned int texture1, texture2;
 
@@ -44,6 +44,7 @@ Renderer::~Renderer() {
 }
 
 bool Renderer::Create() {
+    
     GLFWwindow *glfwWindow = window.GetGlfwWindow();
     glfwSetFramebufferSizeCallback(glfwWindow, framebufferSizeCallback);
     glfwSetCursorPosCallback(glfwWindow, mouseCallback);
@@ -54,16 +55,13 @@ bool Renderer::Create() {
     lastX = scrWidth / 2.0f;
     lastY = scrHeight / 2.0f;
 
-    Cuboid cuboid;
-    cuboid.Create(1.0, 1.0, 1.0);
-
     GL(glGenVertexArrays(1, &vao));
     GL(glGenBuffers(1, &vbo));
 
     GL(glBindVertexArray(vao));
 
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-    GL(glBufferData(GL_ARRAY_BUFFER, cuboid.GetSizeVertices(), cuboid.GetVertices().data(), GL_STATIC_DRAW));
+    GL(glBufferData(GL_ARRAY_BUFFER, shape1.GetSizeVertices(), shape1.GetVertices().data(), GL_STATIC_DRAW));
 
     // position attribute
     GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0));
@@ -91,7 +89,7 @@ bool Renderer::Create() {
         GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
         GL(glGenerateMipmap(GL_TEXTURE_2D));
     } else {
-        std::cout << "Failed to load texture 1" << std::endl;
+        std::cout << "Failed to load texture 1" << "\n";
     }
     stbi_image_free(data);
 
@@ -110,7 +108,7 @@ bool Renderer::Create() {
         GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
         GL(glGenerateMipmap(GL_TEXTURE_2D));
     } else {
-        std::cout << "Failed to load texture 2" << std::endl;
+        std::cout << "Failed to load texture 2" << "\n";
     }
     stbi_image_free(data);
 
@@ -143,18 +141,24 @@ void Renderer::Draw() {
     shader.UniformMat4("view", view);
 
     glBindVertexArray(vao);
-    for (unsigned int i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, positions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.UniformMat4("model", model);
+    glm::mat4 model = identityMatrix;
+    model = glm::translate(model, glm::vec3(2.0f, 2.0f, 0.0f));
+    shape1.UpdateVertices(model);
+    shader.UniformMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+    model = identityMatrix;
+    model = glm::translate(model, glm::vec3(translationX, translationY, translationZ));
+    model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+    shape2.UpdateVertices(model);
+    shader.UniformMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     shader.Unbind();
 
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    bool a = gjk.colistion(shape1, shape2);
+    std::cout << "\ncolision: " << a << std::endl;
 }
 
 void Renderer::ProcessInput(GLFWwindow *window) {
@@ -166,22 +170,39 @@ void Renderer::ProcessInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        //camera.ProcessKeyboard(FORWARD, deltaTime);
+        translationY += 0.05f;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        //camera.ProcessKeyboard(BACKWARD, deltaTime);
+        translationY -= 0.05f;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        //camera.ProcessKeyboard(LEFT, deltaTime);
+        translationX -= 0.05f;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        //camera.ProcessKeyboard(RIGHT, deltaTime);
+        translationX += 0.05f;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        camera.ProcessKeyboard(SPACE, deltaTime);
+        //camera.ProcessKeyboard(UP, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.ProcessKeyboard(SHIFT, deltaTime);
+        //camera.ProcessKeyboard(DOWN, deltaTime);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        translationZ -= 0.05f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        translationZ += 0.05f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        rotation += 1.0f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        rotation -= 1.0f;
     }
 }
 

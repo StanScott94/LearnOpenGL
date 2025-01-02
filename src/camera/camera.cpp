@@ -37,10 +37,10 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
     if (direction == RIGHT) {
         Position += Right * velocity;
     }
-    if (direction == SPACE) {
+    if (direction == UP) {
         Position += Up * velocity;
     }
-    if (direction == SHIFT) {
+    if (direction == DOWN) {
         Position -= Up * velocity;
     }
 }
