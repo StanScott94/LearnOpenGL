@@ -2,6 +2,7 @@
 
 #include "engine.h"
 #include "../shape/shape.h"
+#include "glm/fwd.hpp"
 #include "simplex.h"
 #include <cstdio>
 
@@ -15,17 +16,20 @@ public:
 	glm::vec3 direction = -support;
 
 	while (true) {
-		support = Support(shape1, shape2, direction);
+            if (direction == glm::vec3(0, 0, 0)) {
+		return true;
+	    }
+	    support = Support(shape1, shape2, direction);
  
-		if (dot(support, direction) <= 0) {
-			return false;
-		}
+	    if (dot(support, direction) <= 0) {
+		return false;
+	    }
 
-		points.push_front(support);
+	    points.push_front(support);
 
-		if (NextSimplex(points, direction)) {
-			return true;
-		}
+	    if (NextSimplex(points, direction)) {
+		return true;
+	    }
 	}
 };
 
@@ -47,9 +51,6 @@ bool NextSimplex(Simplex& points, glm::vec3& direction) {
         glm::vec3 a = points[0];
         glm::vec3 b = points[1];
 
-        std::cout << "a " << a.x << " " << a.y << " " << a.z << std::endl;
-        std::cout << "b " << b.x << " " << b.y << " " << b.z << std::endl;
-
         glm::vec3 ab = b - a;
         glm::vec3 ao = -a;
 
@@ -61,16 +62,12 @@ bool NextSimplex(Simplex& points, glm::vec3& direction) {
         }
 
         return false;
-}
+    }
 
     bool Triangle(Simplex& points, glm::vec3& direction) {
 	glm::vec3 a = points[0];
 	glm::vec3 b = points[1];
 	glm::vec3 c = points[2];
-
-        std::cout << "a " << a.x << " " << a.y << " " << a.z << std::endl;
-        std::cout << "b " << b.x << " " << b.y << " " << b.z << std::endl;
-        std::cout << "c " << c.x << " " << c.y << " " << c.z << std::endl;
 
 	glm::vec3 ab = b - a;
 	glm::vec3 ac = c - a;
@@ -106,11 +103,6 @@ bool NextSimplex(Simplex& points, glm::vec3& direction) {
 	glm::vec3 b = points[1];
 	glm::vec3 c = points[2];
 	glm::vec3 d = points[3];
-
-        std::cout << "a " << a.x << " " << a.y << " " << a.z << std::endl;
-        std::cout << "b " << b.x << " " << b.y << " " << b.z << std::endl;
-        std::cout << "c " << c.x << " " << c.y << " " << c.z << std::endl;
-        std::cout << "d " << d.x << " " << d.y << " " << d.z << std::endl;
 
 	glm::vec3 ab = b - a;
 	glm::vec3 ac = c - a;

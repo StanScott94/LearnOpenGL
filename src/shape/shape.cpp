@@ -8,52 +8,52 @@ Shape::Shape(std::string id, float width, float length, float height): id(id) {
 
     initialVertices = vertices = {
         // Front face
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 0.0f,
-         halfWidth, -halfHeight, -halfLength,  1.0f, 0.0f,
-         halfWidth,  halfHeight, -halfLength,  1.0f, 1.0f,
-         halfWidth,  halfHeight, -halfLength,  1.0f, 1.0f,
-        -halfWidth,  halfHeight, -halfLength,  0.0f, 1.0f,
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 0.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 0.0f,
+         halfWidth, -halfHeight, -halfLength, 1.0f, 0.0f,
+         halfWidth,  halfHeight, -halfLength, 1.0f, 1.0f,
+         halfWidth,  halfHeight, -halfLength, 1.0f, 1.0f,
+        -halfWidth,  halfHeight, -halfLength, 0.0f, 1.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 0.0f,
 
         // Back face
-        -halfWidth, -halfHeight,  halfLength,  0.0f, 0.0f,
-         halfWidth, -halfHeight,  halfLength,  1.0f, 0.0f,
-         halfWidth,  halfHeight,  halfLength,  1.0f, 1.0f,
-         halfWidth,  halfHeight,  halfLength,  1.0f, 1.0f,
-        -halfWidth,  halfHeight,  halfLength,  0.0f, 1.0f,
-        -halfWidth, -halfHeight,  halfLength,  0.0f, 0.0f,
+        -halfWidth, -halfHeight,  halfLength, 0.0f, 0.0f,
+         halfWidth, -halfHeight,  halfLength, 1.0f, 0.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 1.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 1.0f,
+        -halfWidth,  halfHeight,  halfLength, 0.0f, 1.0f,
+        -halfWidth, -halfHeight,  halfLength, 0.0f, 0.0f,
 
         // Left face
-        -halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
-        -halfWidth,  halfHeight, -halfLength,  1.0f, 1.0f,
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
-        -halfWidth, -halfHeight,  halfLength,  0.0f, 0.0f,
-        -halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
+        -halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
+        -halfWidth,  halfHeight, -halfLength, 1.0f, 1.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
+        -halfWidth, -halfHeight,  halfLength, 0.0f, 0.0f,
+        -halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
 
         // Right face
-         halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
-         halfWidth,  halfHeight, -halfLength,  1.0f, 1.0f,
-         halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
-         halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
-         halfWidth, -halfHeight,  halfLength,  0.0f, 0.0f,
-         halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
+         halfWidth,  halfHeight, -halfLength, 1.0f, 1.0f,
+         halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
+         halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
+         halfWidth, -halfHeight,  halfLength, 0.0f, 0.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
 
         // Bottom face
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
-         halfWidth, -halfHeight, -halfLength,  1.0f, 1.0f,
-         halfWidth, -halfHeight,  halfLength,  1.0f, 0.0f,
-         halfWidth, -halfHeight,  halfLength,  1.0f, 0.0f,
-        -halfWidth, -halfHeight,  halfLength,  0.0f, 0.0f,
-        -halfWidth, -halfHeight, -halfLength,  0.0f, 1.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
+         halfWidth, -halfHeight, -halfLength, 1.0f, 1.0f,
+         halfWidth, -halfHeight,  halfLength, 1.0f, 0.0f,
+         halfWidth, -halfHeight,  halfLength, 1.0f, 0.0f,
+        -halfWidth, -halfHeight,  halfLength, 0.0f, 0.0f,
+        -halfWidth, -halfHeight, -halfLength, 0.0f, 1.0f,
 
         // Top face
-        -halfWidth,  halfHeight, -halfLength,  0.0f, 1.0f,
-         halfWidth,  halfHeight, -halfLength,  1.0f, 1.0f,
-         halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
-         halfWidth,  halfHeight,  halfLength,  1.0f, 0.0f,
-        -halfWidth,  halfHeight,  halfLength,  0.0f, 0.0f,
-        -halfWidth,  halfHeight, -halfLength,  0.0f, 1.0f
+        -halfWidth,  halfHeight, -halfLength, 0.0f, 1.0f,
+         halfWidth,  halfHeight, -halfLength, 1.0f, 1.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
+         halfWidth,  halfHeight,  halfLength, 1.0f, 0.0f,
+        -halfWidth,  halfHeight,  halfLength, 0.0f, 0.0f,
+        -halfWidth,  halfHeight, -halfLength, 0.0f, 1.0f
     };
 }
 
@@ -85,7 +85,8 @@ glm::vec3 Shape::FindFurthestPoint(glm::vec3 direction) const {
         }
     }
 
-    std::cout << "maxPoint " << id << ": " << maxPoint.x << " " << maxPoint.y << " " << maxPoint.z << std::endl;
+    std::cout << "direction" << id << ": " << direction.x << " " << direction.y << " " << direction.z << std::endl;
+    std::cout << "maxPoint" << id << ": " << maxPoint.x << " " << maxPoint.y << " " << maxPoint.z << std::endl;
     return maxPoint;
 }
 
@@ -97,14 +98,5 @@ void Shape::UpdateVertices(const glm::mat4& modelMatrix) {
         vertices[i]     = transformedPosition.x;
         vertices[i + 1] = transformedPosition.y;
         vertices[i + 2] = transformedPosition.z;
-    }
-	
-    std::cout << "initialVertices: " << id << std::endl;
-    for (size_t i = 0; i < initialVertices.size(); i += 5) {
-        std::cout << initialVertices[i] << " " << initialVertices[i+1] << initialVertices[i+2] << "\n";
-    }
-    std::cout << "\nvertices: " << id << std::endl;
-    for (size_t i = 0; i < initialVertices.size(); i += 5) {
-        std::cout << vertices[i] << " " << vertices[i+1] << vertices[i+2] << "\n";
     }
 }
