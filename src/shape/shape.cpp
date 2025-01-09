@@ -85,8 +85,6 @@ glm::vec3 Shape::FindFurthestPoint(glm::vec3 direction) const {
         }
     }
 
-    std::cout << "direction" << id << ": " << direction.x << " " << direction.y << " " << direction.z << std::endl;
-    std::cout << "maxPoint" << id << ": " << maxPoint.x << " " << maxPoint.y << " " << maxPoint.z << std::endl;
     return maxPoint;
 }
 

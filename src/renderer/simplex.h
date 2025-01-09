@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine.h"
+#include <array>
 
 struct Simplex {
 public:

@@ -3,10 +3,8 @@
 #include "../camera/camera.h"
 #include "../shape/shape.h"
 #include "gjk.h"
-#include <filesystem>
 #include <ostream>
-
-namespace fs = std::filesystem;
+#include <string>
 
 float fov = 45.0f;
 float rotation = 0.0f;
@@ -83,8 +81,8 @@ bool Renderer::Create() {
 
     int width, height, nrChannels;
 
-    fs::path filePath = "resources/container.jpg";
-    unsigned char *data = stbi_load(filePath.string().c_str(), &width, &height, &nrChannels, 0);
+    std::string filePath = "resources/container.jpg";
+    unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
         GL(glGenerateMipmap(GL_TEXTURE_2D));
@@ -103,7 +101,7 @@ bool Renderer::Create() {
     GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
     filePath = "resources/awesomeface.png";
-    data = stbi_load(filePath.string().c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
         GL(glGenerateMipmap(GL_TEXTURE_2D));
