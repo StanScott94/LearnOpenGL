@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine.h"
-#include "../window/window.h"
-#include "../shader/shader.h"
+#include "../ui/window.h"
+#include "../renderer/shader.h"
 
 class Renderer {
 public:

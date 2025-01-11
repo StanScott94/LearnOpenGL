@@ -1,10 +1,11 @@
 #include "renderer.h"
-#include "gl_utils.h"
-#include "../camera/camera.h"
-#include "../shape/shape.h"
-#include "gjk.h"
 #include <ostream>
 #include <string>
+#include "gl_utils.h"
+#include "../game/camera/camera.h"
+#include "../game/physics/shape.h"
+#include "../game/physics/gjk.h"
+
 
 float fov = 45.0f;
 float rotation = 0.0f;
@@ -12,8 +13,8 @@ float translationX = 2.0f;
 float translationY = 2.0f;
 float translationZ = 0.0f;
 
-Shape shape1("shape1", 1.0f, 1.0f, 1.0f);
-Shape shape2("shape2", 1.0f, 1.0f, 1.0f);
+Shape shape1(1.0f, 1.0f, 1.0f);
+Shape shape2(1.0f, 1.0f, 1.0f);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 

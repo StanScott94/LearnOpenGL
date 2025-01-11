@@ -1,7 +1,7 @@
 #include "shape.h"
 #include <string>
 
-Shape::Shape(std::string id, float width, float length, float height): id(id) {
+Shape::Shape(float width, float length, float height) {
     float halfWidth = width / 2.0f;
     float halfLength = length / 2.0f;
     float halfHeight = height / 2.0f;
@@ -66,10 +66,6 @@ const std::vector<float>& Shape::GetVertices() const {
 
 int Shape::GetSizeVertices() const {
     return vertices.size() * sizeof(float);
-}
-
-std::string Shape::GetId() const {
-    return id;
 }
 
 glm::vec3 Shape::FindFurthestPoint(glm::vec3 direction) const {

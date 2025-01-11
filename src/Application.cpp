@@ -1,8 +1,8 @@
-#include "camera/camera.h"
+#include "game/camera/camera.h"
 #include "engine.h"
-#include "./window/window.h"
-#include "./shader/shader.h"
-#include "./renderer/renderer.h"
+#include "ui/window.h"
+#include "renderer/shader.h"
+#include "renderer/renderer.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
