@@ -12,7 +12,6 @@ public:
 
     bool Create();
     void Destroy();
-
     void Bind();
     void Unbind();
 

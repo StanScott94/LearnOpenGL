@@ -2,11 +2,10 @@
 
 #include "engine.h"
 #include "../ui/window.h"
-#include "../renderer/shader.h"
 
 class Renderer {
 public:
-    Renderer(Shader &shader, Window &window);
+    Renderer(Window &window);
     ~Renderer();
 
     bool Create();
@@ -15,9 +14,9 @@ public:
     void DrawImGui();
 
 private:
-    Shader &shader;
     Window &window;
     unsigned int vao;
+    unsigned int lightVao;
     unsigned int vbo;
     void ProcessInput(GLFWwindow *window);
 };

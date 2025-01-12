@@ -114,8 +114,9 @@ void Shader::Uniform2f(std::string name, glm::vec2 &value) {
 }
 
 void Shader::Uniform3f(std::string name, glm::vec3 &value) {
-    unsigned int location = m_Uniforms[name];
-    GL(glUniform3f(location, value.x, value.y, value.z));
+    GL(glUniform3fv(glGetUniformLocation(m_ProgramId, name.c_str()), 1, &value[0]));
+    //unsigned int location = m_Uniforms[name];
+    //GL(glUniform3f(location, value.x, value.y, value.z));
 }
 
 void Shader::Uniform4f(std::string name, glm::vec4 &value) {

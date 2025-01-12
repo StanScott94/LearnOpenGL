@@ -1,7 +1,10 @@
 #include "renderer.h"
+#include <cstdio>
 #include <ostream>
 #include <string>
 #include "gl_utils.h"
+#include "glm/fwd.hpp"
+#include "shader.h"
 #include "../game/camera/camera.h"
 #include "../game/physics/shape.h"
 #include "../game/physics/gjk.h"
@@ -9,14 +12,18 @@
 
 float fov = 45.0f;
 float rotation = 0.0f;
-float translationX = 2.0f;
-float translationY = 2.0f;
-float translationZ = 0.0f;
+float translationX = 0.75f;
+float translationY = 0.0f;
+float translationZ = -1.0f;
 
 Shape shape1(1.0f, 1.0f, 1.0f);
 Shape shape2(1.0f, 1.0f, 1.0f);
+Shape shape3(1.0f, 1.0f, 1.0f);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+Shader containerShader("Container", "shaders/cubeWithNormals.vert", "shaders/lightWithNormals.frag");
+Shader lightShader("Light", "shaders/basicCube.vert", "shaders/lightcube.frag");
 
 GJK gjk;
 
@@ -25,6 +32,8 @@ float lastFrame = 0.0f;
 float lastX = 0.0f;
 float lastY = 0.0f;
 bool firstMouse = true;
+
+bool collision = false;
 
 glm::mat4 identityMatrix = glm::mat4(1.0f);
 
@@ -35,7 +44,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-Renderer::Renderer(Shader &shader, Window &window): shader(shader), window(window) {
+Renderer::Renderer(Window &window): window(window) {
     stbi_set_flip_vertically_on_load(true);
 }
 
@@ -43,7 +52,12 @@ Renderer::~Renderer() {
 }
 
 bool Renderer::Create() {
-    
+    if (!containerShader.Create()) {
+        return 1;
+    }
+    if (!lightShader.Create()) {
+        return 1;
+    }
     GLFWwindow *glfwWindow = window.GetGlfwWindow();
     glfwSetFramebufferSizeCallback(glfwWindow, framebufferSizeCallback);
     glfwSetCursorPosCallback(glfwWindow, mouseCallback);
@@ -55,6 +69,7 @@ bool Renderer::Create() {
     lastY = scrHeight / 2.0f;
 
     GL(glGenVertexArrays(1, &vao));
+    GL(glGenVertexArrays(1, &lightVao));
     GL(glGenBuffers(1, &vbo));
 
     GL(glBindVertexArray(vao));
@@ -63,11 +78,14 @@ bool Renderer::Create() {
     GL(glBufferData(GL_ARRAY_BUFFER, shape1.GetSizeVertices(), shape1.GetVertices().data(), GL_STATIC_DRAW));
 
     // position attribute
-    GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0));
+    //GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0)); //basic cube
+    //GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0)); //cube with texture
+    GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0)); //cube with normals 
     GL(glEnableVertexAttribArray(0));
 
     // color attribute
-    GL(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))));
+    //GL(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)))); //cube with texture
+    GL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)))); //cube with normals
     GL(glEnableVertexAttribArray(1));
 
 
@@ -111,16 +129,21 @@ bool Renderer::Create() {
     }
     stbi_image_free(data);
 
-    shader.Bind();
-    shader.Uniform1f("texture1", 0);
-    shader.Uniform1f("texture2", 1);
+    GL(glBindVertexArray(lightVao));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+    //GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0)); //basic cube
+    GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0));
+    GL(glEnableVertexAttribArray(0));
 
     return true;
 }
 
 void Renderer::Destroy() {
+    containerShader.Destroy();
+    lightShader.Destroy();
     GL(glDeleteBuffers(1, &vbo));
     GL(glDeleteVertexArrays(1, &vao));
+    GL(glDeleteVertexArrays(1, &lightVao));
 }
 
 void Renderer::Draw() {
@@ -131,33 +154,58 @@ void Renderer::Draw() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
-    shader.Bind();
     auto [scrWidth, scrHeight] = window.GetSize();
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)scrWidth / (float)scrHeight, 0.1f, 100.0f);
-    shader.UniformMat4("projection", projection);
-
     glm::mat4 view = camera.GetViewMatrix();
-    shader.UniformMat4("view", view);
-
-    glBindVertexArray(vao);
     glm::mat4 model = identityMatrix;
-    model = glm::translate(model, glm::vec3(2.0f, 2.0f, 0.0f));
-    shape1.UpdateVertices(model);
-    shader.UniformMat4("model", model);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    
+    containerShader.Bind();
+    containerShader.UniformMat4("projection", projection);
+    containerShader.UniformMat4("view", view);
 
     model = identityMatrix;
     model = glm::translate(model, glm::vec3(translationX, translationY, translationZ));
-    model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-    shape2.UpdateVertices(model);
-    shader.UniformMat4("model", model);
+    containerShader.UniformMat4("lightPos", model);
+
+    //containerShader.Uniform1f("texture1", 0);
+    //containerShader.Uniform1f("texture2", 1);
+    glm::vec3 objectColour(1.0f, 0.5f, 0.31f);
+    glm::vec3 lightColour(1.0f, 1.0f, 1.0f);
+    containerShader.Uniform3f("objectColor", objectColour);
+    containerShader.Uniform3f("lightColor", lightColour);
+    
+    glBindVertexArray(vao);
+    model = identityMatrix;
+    model = glm::translate(model, glm::vec3(-0.75f, 0.0f, 0.0f));
+    shape1.UpdateVertices(model);
+    containerShader.UniformMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    shader.Unbind();
+    model = identityMatrix;
+    model = glm::translate(model, glm::vec3(0.75f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+    shape2.UpdateVertices(model);
+    containerShader.UniformMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    containerShader.Unbind();
+
+    lightShader.Bind();
+    lightShader.UniformMat4("projection", projection);
+    lightShader.UniformMat4("view", view);
+
+    glBindVertexArray(lightVao);
+    model = identityMatrix;
+    model = glm::translate(model, glm::vec3(translationX, translationY, translationZ));
+    model = glm::scale(model, glm::vec3(0.2f));
+    shape3.UpdateVertices(model);
+    lightShader.UniformMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);	
+
+    lightShader.Unbind();
 
     GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    bool a = gjk.colistion(shape1, shape2);
-    std::cout << "\ncolision: " << a << std::endl;
+    collision = (gjk.colistion(shape1, shape2) || gjk.colistion(shape1, shape3) || gjk.colistion(shape2, shape3));
 }
 
 void Renderer::ProcessInput(GLFWwindow *window) {
@@ -236,6 +284,7 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 void Renderer::DrawImGui() {
 #ifdef DEBUG
     ImGui::Begin("Renderer");
+    ImGui::Text("Collision: %d", collision);
     ImGui::Text("FPS: %f", ImGui::GetIO().Framerate);
     ImGui::End();
 #endif

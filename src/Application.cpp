@@ -1,7 +1,6 @@
 #include "game/camera/camera.h"
 #include "engine.h"
 #include "ui/window.h"
-#include "renderer/shader.h"
 #include "renderer/renderer.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -14,12 +13,7 @@ int main() {
     Window window("Learn OpenGL", SCR_WIDTH, SCR_HEIGHT, true);
     window.Create();
 
-    Shader shader("Basic", "shaders/basic.vert", "shaders/basic.frag");
-    if (!shader.Create()) {
-        return 1;
-    }
-
-    Renderer renderer(shader, window);
+    Renderer renderer(window);
     renderer.Create();
 
     IMGUI_CHECKVERSION();
@@ -52,7 +46,7 @@ int main() {
         window.Update();
     }
 
-    shader.Destroy();
+    renderer.Destroy();
     window.Destroy();
 }
 
