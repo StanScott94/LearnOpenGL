@@ -171,6 +171,7 @@ void Renderer::Draw() {
     //containerShader.Uniform1f("texture2", 1);
     glm::vec3 objectColour(1.0f, 0.5f, 0.31f);
     glm::vec3 lightColour(1.0f, 1.0f, 1.0f);
+    containerShader.Uniform3f("viewPos", camera.Position);
     containerShader.Uniform3f("objectColor", objectColour);
     containerShader.Uniform3f("lightColor", lightColour);
     
