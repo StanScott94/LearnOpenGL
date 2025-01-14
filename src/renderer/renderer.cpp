@@ -12,9 +12,9 @@
 
 float fov = 45.0f;
 float rotation = 0.0f;
-float translationX = 0.75f;
-float translationY = 0.0f;
-float translationZ = -1.0f;
+float translationX = 1.0f;
+float translationY = 1.0f;
+float translationZ = -2.0f;
 
 Shape shape1(1.0f, 1.0f, 1.0f);
 Shape shape2(1.0f, 1.0f, 1.0f);
@@ -234,10 +234,10 @@ void Renderer::ProcessInput(GLFWwindow *window) {
         translationX += 0.05f;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        //camera.ProcessKeyboard(UP, deltaTime);
+        camera.ProcessKeyboard(UP, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        //camera.ProcessKeyboard(DOWN, deltaTime);
+        camera.ProcessKeyboard(DOWN, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {

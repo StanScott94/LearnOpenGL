@@ -17,7 +17,7 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
 
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(vec3(lightPos * vec4(1.0)) - FragPos);  
+    vec3 lightDir = normalize(vec3(lightPos[3].xyz) - FragPos);  
 
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm); 
